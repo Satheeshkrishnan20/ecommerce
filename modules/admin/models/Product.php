@@ -44,6 +44,7 @@ public function rules()
 
         // Optional (but safe) on update
         [['product_image'], 'safe', 'on' => 'update'],
+         [['email'], 'unique', 'message' => 'This email has already account.'],
 
         // Common validation
         [['category_id', 'product_instock', 'status','min_quantity','max_quantity'], 'integer'],

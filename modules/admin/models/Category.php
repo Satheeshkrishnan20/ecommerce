@@ -24,10 +24,12 @@ class Category extends ActiveRecord
             [['status'], 'integer'],
             [['c_name'], 'string', 'max' => 200],
             [['seourl'], 'string', 'max' => 50],
+               [['c_name'], 'unique', 'message' => 'This category name has already been taken.'],
+            [['seourl'], 'unique', 'message' => 'This SEO URL has already been taken.'],
 
            
-            ['c_name', 'validateUniqueCName', 'on' => ['create', 'update']], 
-            ['seourl', 'validateUniqueSeoUrl', 'on' => ['create', 'update']], 
+            // ['c_name', 'validateUniqueCName', 'on' => ['create', 'update']], 
+            // ['seourl', 'validateUniqueSeoUrl', 'on' => ['create', 'update']], 
             
         ];
     }
@@ -50,33 +52,33 @@ class Category extends ActiveRecord
     }
 
     
-    public function validateUniqueCName($attribute, $params)
-    {
-        $query = self::find()->where([$attribute => $this->$attribute]);
+    // public function validateUniqueCName($attribute, $params)
+    // {
+    //     $query = self::find()->where([$attribute => $this->$attribute]);
 
-        if (!$this->isNewRecord) {
-            $query->andWhere(['<>', 'c_id', $this->c_id]);
-        }
+    //     if (!$this->isNewRecord) {
+    //         $query->andWhere(['<>', 'c_id', $this->c_id]);
+    //     }
 
-        if ($query->exists()) {
-            $this->addError($attribute, 'This category name has already been taken.');
-        }
-    }
+    //     if ($query->exists()) {
+    //         $this->addError($attribute, 'This category name has already been taken.');
+    //     }
+    // }
 
     
-    public function validateUniqueSeoUrl($attribute, $params)
-    {
-        $query = self::find()->where([$attribute => $this->$attribute]);
+    // public function validateUniqueSeoUrl($attribute, $params)
+    // {
+    //     $query = self::find()->where([$attribute => $this->$attribute]);
 
    
-        if (!$this->isNewRecord) {
-            $query->andWhere(['<>', 'c_id', $this->c_id]);
-        }
+    //     if (!$this->isNewRecord) {
+    //         $query->andWhere(['<>', 'c_id', $this->c_id]);
+    //     }
 
-        if ($query->exists()) {
-            $this->addError($attribute, 'This SEO URL has already been taken.');
-        }
-    }
+    //     if ($query->exists()) {
+    //         $this->addError($attribute, 'This SEO URL has already been taken.');
+    //     }
+    // }
 
   
 }

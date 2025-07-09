@@ -48,6 +48,7 @@ class ProductController extends Controller
     public function actionCreate()
     {
         $model = new Product();
+        $model->scenario='create';
 
         if ($model->load(Yii::$app->request->post())) {
             $model->product_image = UploadedFile::getInstance($model, 'product_image');
