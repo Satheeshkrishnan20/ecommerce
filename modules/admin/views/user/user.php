@@ -84,22 +84,7 @@ $(document).ready(function () {
         'district',
         [
             'class' => 'yii\grid\ActionColumn',
-            'template' => '{delete}',  
-            'buttons' => [
-                'delete' => function ($url, $model) {
-                    return Html::a(
-                        '<i class="fas fa-trash"></i>', 
-                        ['delete', 'id' => $model->id],
-                        [
-                            'class' => 'btn btn-danger btn-sm btn-delete',
-                            'data-id' => $model->id,
-                            'data-method' => 'post',
-                            'data-pjax' => 1, 
-                            'data-confirm' => 'Are you sure you want to delete this user?'
-                        ]
-                    );
-                }
-            ]
+            'template'=>'{update} {delete}'
         ],
     ],
     'tableOptions' => ['class' => 'table table-bordered table-hover', 'style' => 'width: 100%'],
