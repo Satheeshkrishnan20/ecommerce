@@ -29,14 +29,14 @@ class WishlistController extends Controller
 
                     if ($existing) {
                         Yii::$app->session->setFlash('info', 'Product already in the wishlist!');
-                        return $this->redirect(['home/home']); // or back to product page
+                        return $this->redirect(['home/home']); 
                     }
 
                     // Add to wishlist
                     $wishlist = new Wishlist();
                     $wishlist->user_id = $user_id;
                     $wishlist->product_id = $product_id;
-                    $wishlist->save(false); // skipping validation
+                    $wishlist->save(false); 
 
                     Yii::$app->session->setFlash('success', 'Product added to wishlist!');
                     return $this->redirect(['home/home']);

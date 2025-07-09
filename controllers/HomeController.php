@@ -40,20 +40,20 @@ public function actionHome()
         $selectedSeoUrls = [$selectedSeoUrls];
     }
 
-    // ✅ Get all categories with at least one product
-    $category = \app\modules\admin\models\Category::find()
+   
+    $category = Category::find()
         ->innerJoinWith('products')
         ->where(['category.status' => 1])
         ->groupBy('category.c_id')
         ->all();
 
-    // ✅ Base product query
+    
     $query = \app\modules\admin\models\Product::find()
-        ->alias('p') // alias product table as 'p'
-        ->innerJoinWith(['category c']) // alias category table as 'c'
-        ->where(['p.status' => 1]); // ✅ disambiguate 'status'
+        ->alias('p') 
+        ->innerJoinWith(['category c']) 
+        ->where(['p.status' => 1]); 
 
-    // ✅ Filter by seourl if selected
+   
     if (!empty($selectedSeoUrls)) {
         $query->andWhere(['c.seourl' => $selectedSeoUrls]);
     }

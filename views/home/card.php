@@ -52,7 +52,7 @@ use yii\widgets\ActiveForm;
                     <label class="form-label mb-0 me-2">Qty:</label>
                     <div class="d-flex align-items-center flex-grow-1">
                         <button type="button" class="btn btn-sm btn-outline-secondary minus-btn">−</button>
-                        <input type="text" name="quantity" class="form-control quantity-input mx-1 text-center" value="1" style="width: 35px;" readonly>
+                        <input type="text" name="quantity" class="form-control quantity-input mx-1 text-center" value="<?= $model->min_quantity?>"     min="<?= $model->min_quantity ?>"  max="<?= $model->max_quantity ?>" style="width: 35px;" readonly>
                         <button type="button" class="btn btn-sm btn-outline-secondary plus-btn">+</button>
                     </div>
                 </div>
@@ -67,12 +67,21 @@ $this->registerJs(<<<JS
 $('.minus-btn').click(function() {
     const input = $(this).siblings('.quantity-input');
     let val = parseInt(input.val());
-    if (val > 1) input.val(val - 1);
+    let min = parseInt(input.attr('min')) || 1;
+
+    if (val > min) {
+        input.val(val - 1);
+    }
 });
+
 $('.plus-btn').click(function() {
     const input = $(this).siblings('.quantity-input');
     let val = parseInt(input.val());
-    input.val(val + 1);
+    let max = parseInt(input.attr('max')) || 999;
+
+    if (val < max) {
+        input.val(val + 1);
+    }
 });
 JS);
 ?>

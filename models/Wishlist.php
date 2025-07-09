@@ -53,8 +53,7 @@ class Wishlist extends \yii\db\ActiveRecord
     }
       public function getProduct()
     {
-        // 'product_id' is the foreign key in the 'wishlist' table
-        // 'p_id' is the primary key in the 'product' table (assuming your Product model uses 'p_id' as PK)
+        
         return $this->hasOne(Product::class, ['p_id' => 'product_id']);
     }
 
