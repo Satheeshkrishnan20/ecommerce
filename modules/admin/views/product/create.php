@@ -44,11 +44,14 @@ use yii\bootstrap\BootstrapAsset;
                     <?= $form->field($model, 'product_instock')->textInput(['type' => 'number']) ?>
 
                     
-                   
+                   <br>
 
                     <?= $form->field($model, 'product_image')->fileInput() ?>
 
-                  
+                  <div class="d-flex justify-content-between">
+                          <?= $form->field($model, 'min_quantity')->textInput(['maxlength' => true]) ?>   
+                          <?= $form->field($model, 'max_quantity')->textInput(['maxlength' => true]) ?>   
+                  </div>
                     <?php if (!$model->isNewRecord && $model->product_image): ?>
                     <p>
                         Current Image: 

@@ -20,7 +20,7 @@ $(document).ready(function () {
     $(document).on('click', '.btn-delete', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
-        let url = '/amazon/admin/product/delete?id=' + id;
+        let url = '/auth/admin/product/delete?id=' + id;
 
         if (confirm('Are you sure you want to delete?')) {
             $.pjax.reload({

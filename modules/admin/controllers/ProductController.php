@@ -52,6 +52,11 @@ class ProductController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->product_image = UploadedFile::getInstance($model, 'product_image');
+            if (!$model->validate()) {
+                echo "<pre>";
+                print_r($model->getErrors());
+                exit;
+            }
 
             if ($model->validate()) {
                 $imageDir = Yii::getAlias('@webroot/images/products/');

@@ -32,7 +32,7 @@ use yii\widgets\ActiveForm;
     </div>
 
     <!-- Content -->
-    <div class="p-3 d-flex flex-column h-100">
+    <div class="p-3 d-flex flex-column h-75">
         <h5 class="mb-1"><?= Html::encode($model->product_name) ?></h5>
         <p class="mb-1"><small>Category: <?= Html::encode($model->category->c_name ?? 'N/A') ?></small></p>
         <h6 class="text-success mb-2">Price: ₹<?= Html::encode(number_format($model->product_price, 2)) ?></h6>

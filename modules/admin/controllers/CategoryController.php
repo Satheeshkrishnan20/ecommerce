@@ -28,6 +28,7 @@ class CategoryController extends Controller
         return parent::beforeAction($action);
     }
  
+    
     public function actionCategory(){
         $this->layout='dashboard';
         $dataProvider=new ActiveDataProvider([

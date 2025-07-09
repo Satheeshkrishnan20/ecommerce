@@ -37,14 +37,14 @@ public function rules()
 {
     return [
         // Required fields for both create & update
-        [['category_id', 'product_price', 'product_name', 'product_description', 'product_instock','min_quantity','max_quantity'], 'required', 'on' => ['create', 'update']],
+        [['category_id', 'product_price', 'product_name', 'product_description', 'product_instock','min_quantity','max_quantity','product_image'], 'required', 'on' => ['create', 'update']],
 
         // Only required during create
-        [['product_image'], 'required', 'on' => 'create'],
+        [['product_image'], 'safe', 'on' => 'create'],
 
         // Optional (but safe) on update
         [['product_image'], 'safe', 'on' => 'update'],
-         [['email'], 'unique', 'message' => 'This email has already account.'],
+       
 
         // Common validation
         [['category_id', 'product_instock', 'status','min_quantity','max_quantity'], 'integer'],
@@ -60,7 +60,7 @@ public function rules()
 
     public function scenarios(){
             $scenarios = parent::scenarios();
-            $scenarios['create'] = ['category_id', 'product_price','product_name','product_description','product_instock','product_image','min_quantity','max_quantity']; 
+            $scenarios['create'] = ['category_id', 'product_price','product_name','product_description','product_instock','min_quantity','max_quantity','product_image']; 
             $scenarios['update'] = ['category_id', 'product_price','product_name','product_description','product_instock','min_quantity','max_quantity']; 
             return $scenarios;
     }
