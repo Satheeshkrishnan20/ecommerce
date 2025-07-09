@@ -13,6 +13,12 @@ class WishlistController extends Controller
 {
    public function actionAdd()
                 {
+                     $userId = Yii::$app->session->get('user_id');
+                    if (!$userId) {
+                        Yii::$app->session->setFlash('error', 'Login to add items to Wishlist.');
+                        return $this->redirect(['home/login']);
+                    }
+
                     $user_id = Yii::$app->session->get('user_id');
                     $product_id = Yii::$app->request->post('product_id');
 
@@ -39,6 +45,11 @@ class WishlistController extends Controller
 
     public function actionWishlist(){
         $userId = Yii::$app->session->get('user_id');
+        // $userId = Yii::$app->session->get('user_id');
+                    if (!$userId) {
+                        Yii::$app->session->setFlash('error', 'Login to add items to Wishlist.');
+                        return $this->redirect(['home/login']);
+                    }
         $dataProvider=new ActiveDataProvider([
             'query' => Wishlist::find()
             ->where(['user_id' => $userId,'status'=>1])

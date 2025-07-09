@@ -5,7 +5,7 @@ use yii\bootstrap5\ActiveForm;
 $this->title = 'Admin Login';
 ?>
 
-<div class="d-flex justify-content-center align-items-center" >
+<div class="d-flex justify-content-center align-items-center">
     <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
         <h2 class="text-center mb-4"><?= Html::encode('Create Admin') ?></h2>
 
@@ -17,7 +17,7 @@ $this->title = 'Admin Login';
 
         <?php $form = ActiveForm::begin([
             'id' => 'login-form',
-             'method' => 'post',
+            'method' => 'post',
             'fieldConfig' => [
                 'template' => "{input}\n{error}",
             ],
@@ -38,8 +38,10 @@ $this->title = 'Admin Login';
             ]) ?>
         </div>
 
-        <div class="d-grid">
+        <!-- ✅ Buttons -->
+        <div class="d-flex justify-content-between mt-3">
             <?= Html::submitButton('Create', ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('Back', ['admin/admin'], ['class' => 'btn btn-secondary']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>

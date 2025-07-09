@@ -8,6 +8,13 @@ use app\components\MailHelper;
 
 
 class UserController extends Controller{
+     public function beforeAction($action)
+    {
+        if (!Yii::$app->session->get('login')) {
+            return $this->redirect(['default/login']);
+        }
+        return parent::beforeAction($action);
+    }
 
 
 

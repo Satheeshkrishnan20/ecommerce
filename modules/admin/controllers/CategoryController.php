@@ -22,6 +22,7 @@ class CategoryController extends Controller
      public function beforeAction($action)
     {
         if (!Yii::$app->session->get('login')) {
+             Yii::$app->session->setFlash('error', 'Login to Access.');
             return $this->redirect(['default/login'])->send();
         }
         return parent::beforeAction($action);

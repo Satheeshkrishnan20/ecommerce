@@ -7,6 +7,14 @@ use yii\data\ActiveDataProvider;
 
 class AdminController extends Controller{
 
+     public function beforeAction($action)
+    {
+        if (!Yii::$app->session->get('login')) {
+            return $this->redirect(['default/login']);
+        }
+        return parent::beforeAction($action);
+    }
+
     public function actionAdmin(){
 
        $dataProvider=new ActiveDataProvider([

@@ -12,7 +12,12 @@ class CartController extends Controller
 {
     public function actionCart()
     {
+        // $userId = Yii::$app->session->get('user_id');
         $userId = Yii::$app->session->get('user_id');
+                    if (!$userId) {
+                        Yii::$app->session->setFlash('error', 'Login to add items to Wishlist.');
+                        return $this->redirect(['home/login']);
+                    }
 
         $dataProvider = new ActiveDataProvider([
             'query' => Cart::find()
