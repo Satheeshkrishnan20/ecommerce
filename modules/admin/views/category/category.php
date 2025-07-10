@@ -1,21 +1,30 @@
 <?php
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 use yii\grid\GridView;
+
+$rbac = Yii::$app->session->get('rbac', []);
+$usertype = Yii::$app->session->get('usertype');
+
+// Set template conditionally
+$template = '';
+if ($usertype == 3 || in_array('update_category', $rbac)) {
+    $template .= '{update} ';
+}
+if ($usertype == 3 || in_array('delete_category', $rbac)) {
+    $template .= '{delete}';
+}
+$template = trim($template); // Remove extra space
 ?>
 
-
 <div class='d-flex justify-content-between align-items-center mb-3'>
-    <div><h5>Manage Products</h5></div>
-    <div class='d-flex gap-2'>
-      
-        
-
-        <?= Html::a('+ Create Category', ['createcategory'], ['class' => 'btn btn-success']) ?>
-        <?= Html::a('Back', ['default/dashboard'], ['class' => 'btn btn-dark']) ?>
+    <div><h5>Manage Categories</h5></div>
+    <div>
+        <?php if ($usertype == 3 || in_array('create_category', $rbac)) : ?>
+            <?= Html::a('Create Category', ['createcategory']) ?>
+        <?php endif; ?>
+        <?= Html::a('Back', ['default/dashboard']) ?>
     </div>
 </div>
-
 
 <?= GridView::widget([
     'dataProvider' => $dataProvider,
@@ -23,31 +32,9 @@ use yii\grid\GridView;
         ['class' => 'yii\grid\SerialColumn'],
         'c_id',
         'c_name',
-
         [
             'class' => 'yii\grid\ActionColumn',
-            'header' => 'Actions',
-            'headerOptions' => ['style' => 'width:80px'], 
-            'template' => '{update} {delete}', 
-             'buttons' => [
-        'update' => function ($url, $model) {
-            return Html::a('<i class="bi bi-pencil"></i>', ['category/update', 'id' => $model->c_id], ['title' => 'Update']);
-        },
-        'delete' => function ($url, $model) {
-            return Html::a('<i class="bi bi-trash"></i>', ['category/delete', 'id' => $model->c_id], [
-                'data-method' => 'post',
-                'data-confirm' => 'Are you sure you want to delete this item?',
-            ]);
-        },
-    ]
-            
+            'template' => $template, // Uses default update/delete icons
         ],
     ],
 ]); ?>
-
-
-
-
-
-
-
