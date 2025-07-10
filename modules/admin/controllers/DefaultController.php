@@ -21,30 +21,46 @@ class DefaultController extends Controller
      * Handles the login process.
      * @return string|\yii\web\Response
      */
-    public function actionLogin()
-    {
-        $model = new User;
-        $model->scenario='admin';
+   public function actionLogin()
+{
+    $model = new User;
+    $model->scenario = 'admin';
 
-        if ($model->load(Yii::$app->request->post())) {
-            $user = User::find()->where([
-                'username' => $model->username,
-                'password' => $model->password,
+    if ($model->load(Yii::$app->request->post())) {
+        $user = User::find()->where([
+            'username' => $model->username,
+            'password' => $model->password,
+        ])->one();
 
-                'usertype'=>3
-            ])->one();
-
-            if ($user) {
-                Yii::$app->session->set('login', true);
-                Yii::$app->session->setFlash('success', 'Welcome back, ' . $user->username . '!'); // Success flash on login
-                return $this->redirect(['dashboard']);
-            } else {
-                Yii::$app->session->setFlash('error', 'Invalid username or password.'); // Error flash on failed login
+        if ($user) {
+            if ($user->usertype == 1) {
+                // ❌ Block usertype 1
+                Yii::$app->session->setFlash('error', 'Access denied for this user type.');
+                return $this->redirect(['login']);
             }
-        }
 
-        return $this->render('login', ['model' => $model]);
+            // ✅ Common session data
+            Yii::$app->session->set('login', true);
+            Yii::$app->session->set('user_id', $user->id);
+            Yii::$app->session->set('username', $user->username);
+            Yii::$app->session->set('usertype', $user->usertype);
+
+            // ✅ For Admin (type 2), set RBAC
+            if ($user->usertype == 2) {
+                $rbac = json_decode($user->rbac, true);
+                Yii::$app->session->set('rbac', is_array($rbac) ? $rbac : []);
+            }
+
+            Yii::$app->session->setFlash('success', 'Welcome back, ' . $user->username . '!');
+            return $this->redirect(['dashboard']);
+        } else {
+            Yii::$app->session->setFlash('error', 'Invalid username or password.');
+        }
     }
+
+    return $this->render('login', ['model' => $model]);
+}
+
 
     /**
      * Renders the dashboard view.

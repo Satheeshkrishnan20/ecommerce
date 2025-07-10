@@ -48,7 +48,7 @@ public function actionHome()
         ->all();
 
     
-    $query = \app\modules\admin\models\Product::find()
+    $query = Product::find()
         ->alias('p') 
         ->innerJoinWith(['category c']) 
         ->where(['p.status' => 1]); 
@@ -58,7 +58,7 @@ public function actionHome()
         $query->andWhere(['c.seourl' => $selectedSeoUrls]);
     }
 
-    $dataProvider = new \yii\data\ActiveDataProvider([
+    $dataProvider = new ActiveDataProvider([
         'query' => $query,
         'pagination' => ['pageSize' => 10],
     ]);

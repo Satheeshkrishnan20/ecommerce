@@ -20,11 +20,11 @@ use yii\grid\GridView;
     'columns' => [
         ['class' => 'yii\grid\SerialColumn'],
         'username',
-        'rbac',
+        
       
         [
             'class' => 'yii\grid\ActionColumn',
-            'template' => '{delete}  {update}',
+            'template' => '{delete}  {update} {view}',
            
         ],
     ],

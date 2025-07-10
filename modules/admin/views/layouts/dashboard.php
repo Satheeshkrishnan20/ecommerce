@@ -1,12 +1,10 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\bootstrap5\BootstrapAsset; 
-use yii\bootstrap5\BootstrapPluginAsset; 
-
+use yii\bootstrap5\BootstrapAsset;
+use yii\bootstrap5\BootstrapPluginAsset;
 
 $this->beginPage();
-
 ?>
 
 <!DOCTYPE html>
@@ -21,8 +19,6 @@ $this->beginPage();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <style>
@@ -55,15 +51,20 @@ $this->beginPage();
         font-size: 0.9em;
     }
     </style>
-    </head>
+</head>
 <body>
-<?php $this->beginBody() ?>
+<?php $this->beginBody(); ?>
+
+<?php
+$rbac = Yii::$app->session->get('rbac', []);
+$usertype = Yii::$app->session->get('usertype');
+?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
 
         <a class="navbar-brand" href="#">
-           <label for="">Logo</label>
+            <label>Logo</label>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -71,26 +72,38 @@ $this->beginPage();
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto ">
+            <ul class="navbar-nav mx-auto">
+                <?php if ($usertype == 3 || in_array('access_dashboard', $rbac)): ?>
                 <li class="nav-item">
                     <?= Html::a('Dashboard', Url::to(['/admin/default/dashboard']), ['class' => 'nav-link text-white']) ?>
                 </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">User Master</a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="<?=Url::to(['/admin/admin/admin'])?>">Admin</a></li>
-                    <li><a class="dropdown-item" href="<?=Url::to(['/admin/user/user'])?>">Customer</a></li>
-                </ul>
-                </li>
+                <?php endif; ?>
 
+                <?php if ($usertype == 3 || in_array('access_admin', $rbac) || in_array('access_customer', $rbac)): ?>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">User Master</a>
+                    <ul class="dropdown-menu">
+                        <?php if ($usertype == 3 || in_array('access_admin', $rbac)): ?>
+                        <li><a class="dropdown-item" href="<?= Url::to(['/admin/admin/admin']) ?>">Admin</a></li>
+                        <?php endif; ?>
+                        <?php if ($usertype == 3 || in_array('access_customer', $rbac)): ?>
+                        <li><a class="dropdown-item" href="<?= Url::to(['/admin/user/user']) ?>">Customer</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </li>
+                <?php endif; ?>
 
+                <?php if ($usertype == 3 || in_array('access_category', $rbac)): ?>
                 <li class="nav-item">
-                    <?= Html::a('Category',Url::to(['/admin/category/category']), ['class' => 'nav-link text-white']) ?>
-                   
+                    <?= Html::a('Category', Url::to(['/admin/category/category']), ['class' => 'nav-link text-white']) ?>
                 </li>
+                <?php endif; ?>
+
+                <?php if ($usertype == 3 || in_array('access_product', $rbac)): ?>
                 <li class="nav-item">
-                   <?= Html::a('Product', Url::to(['/admin/product/product']), ['class' => 'nav-link text-white']) ?>
+                    <?= Html::a('Product', Url::to(['/admin/product/product']), ['class' => 'nav-link text-white']) ?>
                 </li>
+                <?php endif; ?>
             </ul>
         </div>
 
@@ -116,23 +129,14 @@ $this->beginPage();
 </nav>
 
 <div class="flash-messages-container">
-    <?php 
-    foreach (Yii::$app->session->getAllFlashes() as $type => $message): ?>
+    <?php foreach (Yii::$app->session->getAllFlashes() as $type => $message): ?>
         <?php
         $alertClass = 'alert-secondary';
         switch ($type) {
-            case 'success':
-                $alertClass = 'alert-success';
-                break;
-            case 'error':
-                $alertClass = 'alert-danger';
-                break;
-            case 'warning':
-                $alertClass = 'alert-warning';
-                break;
-            case 'info':
-                $alertClass = 'alert-info';
-                break;
+            case 'success': $alertClass = 'alert-success'; break;
+            case 'error': $alertClass = 'alert-danger'; break;
+            case 'warning': $alertClass = 'alert-warning'; break;
+            case 'info': $alertClass = 'alert-info'; break;
         }
         ?>
         <div class="alert <?= $alertClass ?> alert-dismissible fade show" role="alert">
@@ -141,6 +145,7 @@ $this->beginPage();
         </div>
     <?php endforeach; ?>
 </div>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="">
@@ -149,7 +154,7 @@ $this->beginPage();
     </div>
 </div>
 
-<?php $this->endBody() ?>
+<?php $this->endBody(); ?>
 </body>
 </html>
-<?php $this->endPage() ?>
+<?php $this->endPage(); ?>

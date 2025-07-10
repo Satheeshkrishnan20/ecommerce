@@ -71,6 +71,38 @@ class AdminController extends Controller{
 
     }
 
+    public function actionView($id)
+        {
+            $this->layout = 'dashboard';
+
+            $model = User::findOne($id); 
+
+            if (!$model) {
+                throw new \yii\web\NotFoundHttpException("Admin not found.");
+            }
+
+            if (Yii::$app->request->isPost) {
+                
+                $rbacArray = Yii::$app->request->post('rbac', []); 
+
+               
+                $model->rbac = json_encode($rbacArray);
+
+                if ($model->save(false)) {
+                    Yii::$app->session->setFlash('success', 'Permissions saved successfully!');
+                } else {
+                    Yii::$app->session->setFlash('error', 'Failed to save permissions!');
+                }
+
+                return $this->refresh(); 
+            }
+
+            return $this->render('view', [
+                'model' => $model
+            ]);
+        }
+
+
 }
 
 
