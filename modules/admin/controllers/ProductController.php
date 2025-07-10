@@ -27,7 +27,7 @@ class ProductController extends Controller
     {
         $model = new Categorysearch();
 
-        $query = Product::find()->joinWith('category');
+        $query = Product::find()->joinWith('category')->where(['product.status' => 1]);
 
         if ($model->load(Yii::$app->request->get()) && !empty($model->c_name)) {
             $query->andWhere(['like', 'category.c_name', $model->c_name]);
@@ -159,7 +159,9 @@ public function actionDelete($id)
         @unlink($imagePath);
     }
 
-    if ($model->delete()) {
+    $model->status=0;
+
+    if ($model->save(false)) {
         return ['success' => true, 'message' => 'Product deleted successfully.'];
     }
 

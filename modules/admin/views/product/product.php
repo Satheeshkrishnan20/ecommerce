@@ -36,7 +36,7 @@ $(document).ready(function () {
         let id = $(this).data('id');
         let url = '/auth/admin/product/delete?id=' + id;
 
-        if (confirm('Are you sure you want to delete?')) {
+        
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -53,7 +53,7 @@ $(document).ready(function () {
                     alert('Server error. Please try again.');
                 }
             });
-        }
+        
     });
 
     // Image preview
