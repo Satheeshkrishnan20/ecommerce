@@ -4,19 +4,33 @@ use yii\helpers\Html;
 use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
 
-// Check if search input has value (expand with more fields if needed)
+// RBAC & User Type
+$rbac = Yii::$app->session->get('rbac', []);
+$usertype = Yii::$app->session->get('usertype');
+
+// RBAC-based template
+$template = '';
+if ($usertype == 3 || in_array('update_product', $rbac)) {
+    $template .= '{update} ';
+}
+if ($usertype == 3 || in_array('delete_product', $rbac)) {
+    $template .= '{delete} ';
+}
+$template .= '{view}';
+$template = trim($template);
+
+// Search toggle logic
 $showSearch = !empty($model->c_name);
 $searchInputId = Html::getInputId($model, 'c_name');
 ?>
 
 <script>
 $(document).ready(function () {
-    // Always toggle search box
     $('#toggleBtn').click(function () {
         $('#helloText').slideToggle();
     });
 
-    // Delete confirmation and reload
+    // Pjax delete
     $(document).on('click', '.btn-delete', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
@@ -42,12 +56,16 @@ $(document).ready(function () {
 });
 </script>
 
-<!-- Header with buttons -->
+<!-- Top Buttons -->
 <div class='d-flex justify-content-between align-items-center mb-3'>
     <div><h5><?= Html::encode("Manage Product") ?></h5></div>
     <div class='d-flex gap-2'>
         <button class='btn btn-primary' id="toggleBtn"><i class="bi bi-search"></i></button>
-        <?= Html::a('+ Create Product', ['create'], ['class' => 'btn btn-success']) ?>
+
+        <?php if ($usertype == 3 || in_array('create_product', $rbac)): ?>
+            <?= Html::a('+ Create Product', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php endif; ?>
+
         <?= Html::a('Back', ['default/dashboard'], ['class' => 'btn btn-dark']) ?>
     </div>
 </div>
@@ -117,7 +135,7 @@ $(document).ready(function () {
         ],
         [
             'class' => 'yii\grid\ActionColumn',
-            'template' => '{delete} {update} {view}',
+            'template' => $template,
             'buttons' => [
                 'delete' => function ($url, $model) {
                     return Html::a('Delete', $url, [
