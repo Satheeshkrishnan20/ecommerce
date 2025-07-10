@@ -139,28 +139,34 @@ class ProductController extends Controller
         return $this->render('create', ['model' => $model]);
     }
 
-    public function actionDelete($id)
-    {
-        $model = Product::findOne($id);
+public function actionDelete($id)
+{
+    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        if ($model === null) {
-            throw new \yii\web\NotFoundHttpException('The requested product does not exist.');
-        }
-
-        $imagePath = Yii::getAlias('@webroot/images/products/') . $model->product_image;
-
-        if ($model->product_image && file_exists($imagePath)) {
-            unlink($imagePath);
-        }
-
-        if ($model->delete()) {
-            Yii::$app->session->setFlash('success', 'Product deleted successfully.');
-        } else {
-            Yii::$app->session->setFlash('error', 'Failed to delete product.');
-        }
-
-        return $this->redirect(['product']);
+    if (!Yii::$app->request->isAjax || !Yii::$app->request->isPost) {
+        return ['success' => false, 'message' => 'Invalid request.'];
     }
+
+    $model = Product::findOne($id);
+
+    if (!$model) {
+        return ['success' => false, 'message' => 'Product not found.'];
+    }
+
+    $imagePath = Yii::getAlias('@webroot/images/products/') . $model->product_image;
+
+    if ($model->product_image && file_exists($imagePath)) {
+        @unlink($imagePath);
+    }
+
+    if ($model->delete()) {
+        return ['success' => true, 'message' => 'Product deleted successfully.'];
+    }
+
+    return ['success' => false, 'message' => 'Failed to delete product.'];
+}
+
+
 
     public function actionView($id)
     {

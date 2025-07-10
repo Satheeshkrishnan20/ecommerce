@@ -31,18 +31,27 @@ $(document).ready(function () {
     });
 
     // Pjax delete
-    $(document).on('click', '.btn-delete', function (e) {
+         $(document).on('click', '.btn-delete', function (e) {
         e.preventDefault();
         let id = $(this).data('id');
         let url = '/auth/admin/product/delete?id=' + id;
 
         if (confirm('Are you sure you want to delete?')) {
-            $.pjax.reload({
-                container: '#pjax-container',
+            $.ajax({
                 url: url,
-                push: false,
-                replace: false,
-                timeout: 10000
+                type: 'POST',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        $.pjax.reload({ container: '#pjax-container', timeout: 10000 });
+                        alert(res.message);
+                    } else {
+                        alert(res.message || 'Delete failed. Please try again.');
+                    }
+                },
+                error: function () {
+                    alert('Server error. Please try again.');
+                }
             });
         }
     });
@@ -137,13 +146,15 @@ $(document).ready(function () {
             'class' => 'yii\grid\ActionColumn',
             'template' => $template,
             'buttons' => [
-                'delete' => function ($url, $model) {
-                    return Html::a('Delete', $url, [
-                        'class' => 'btn-delete text-danger',
-                        'data-id' => $model->p_id,
-                        'data-pjax' => '0'
-                    ]);
-                }
+              'delete' => function ($url, $model) {
+                return Html::a('Delete', 'javascript:void(0);', [
+                    'class' => 'btn-delete text-danger',
+                    'data-id' => $model->p_id,
+                    'data-pjax' => '0'
+                ]);
+            }
+
+
             ]
         ],
     ],
