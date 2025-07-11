@@ -10,7 +10,8 @@ use yii\helpers\Url;
             <div class="card shadow">
                 <div class="card-body">
 
-                    <h4 class="text-center mb-4">Create Category</h4>
+                    <h4 class="text-center mb-4"><?= $model->isNewRecord ? 'Create Category' : 'Update Category' ?></h4>
+                    
 
                     <?php $form = ActiveForm::begin(); ?>
 

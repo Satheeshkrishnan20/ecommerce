@@ -23,27 +23,30 @@ class ProductController extends Controller
         return parent::beforeAction($action);
     }
 
-    public function actionProduct()
-    {
-        $model = new Categorysearch();
+public function actionProduct()
+{
+    $categoryName = Yii::$app->request->post('category'); 
 
-        $query = Product::find()->joinWith('category')->where(['product.status' => 1]);
+    $query = Product::find()
+        ->joinWith('category') // assumes relation: getCategory()
+        ->where(['product.status' => 1]);
 
-        if ($model->load(Yii::$app->request->get()) && !empty($model->c_name)) {
-            $query->andWhere(['like', 'category.c_name', $model->c_name]);
-        }
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => $query,
-            'pagination' => ['pageSize' => 10],
-            'sort' => ['defaultOrder' => ['p_id' => SORT_DESC]],
-        ]);
-
-        return $this->render('product', [
-            'dataProvider' => $dataProvider,
-            'model' => $model
-        ]);
+    if (!empty($categoryName)) {
+        $query->andWhere(['like', 'category.c_name', $categoryName]);
     }
+
+    $dataProvider = new \yii\data\ActiveDataProvider([
+        'query' => $query,
+        'pagination' => ['pageSize' => 10],
+        'sort' => ['defaultOrder' => ['p_id' => SORT_DESC]],
+    ]);
+
+    return $this->render('product', [
+        'dataProvider' => $dataProvider,
+        'category' => $categoryName,
+    ]);
+}
+
 
     public function actionCreate()
     {
@@ -52,11 +55,7 @@ class ProductController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $model->product_image = UploadedFile::getInstance($model, 'product_image');
-            if (!$model->validate()) {
-                echo "<pre>";
-                print_r($model->getErrors());
-                exit;
-            }
+            
 
             if ($model->validate()) {
                 $imageDir = Yii::getAlias('@webroot/images/products/');
@@ -80,7 +79,7 @@ class ProductController extends Controller
 
                 if ($model->save()) {
                     Yii::$app->session->setFlash('success', 'Product created successfully.');
-                    return $this->redirect(['create']);
+                    return $this->redirect(['product/product']);
                 } else {
                     Yii::$app->session->setFlash('error', 'Failed to save product.');
                 }
@@ -130,7 +129,7 @@ class ProductController extends Controller
 
             if ($model->validate() && $model->save()) {
                 Yii::$app->session->setFlash('success', 'Product updated successfully.');
-                return $this->redirect(['product']);
+                return $this->redirect(['product/product']);
             } else {
                 Yii::$app->session->setFlash('error', 'Failed to update product.');
             }
@@ -161,6 +160,7 @@ public function actionDelete($id)
 
     $model->status=0;
 
+   
     if ($model->save(false)) {
         return ['success' => true, 'message' => 'Product deleted successfully.'];
     }

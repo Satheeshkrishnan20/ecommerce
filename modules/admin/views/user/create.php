@@ -9,7 +9,8 @@ use yii\helpers\Html;
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10 col-sm-12">
             <div class="card shadow-lg border-0 p-5">
-                <h4 class="text-center mb-4">User Signup</h4>
+                <h4 class="text-center mb-4"><?= $model->isNewRecord ? 'Create User' : 'Update User' ?></h4>
+                
 
                 <?php $form = ActiveForm::begin([
                     'options' => ['class' => 'needs-validation'],
@@ -24,7 +25,7 @@ use yii\helpers\Html;
                         <?= $form->field($model, 'username')->textInput(['class' => 'form-control', 'placeholder' => 'Enter Username']) ?>
                         <?= $form->field($model, 'fullname')->textInput(['class' => 'form-control', 'placeholder' => 'Enter Full Name']) ?>
                         <?= $form->field($model, 'email')->input('email', ['class' => 'form-control', 'placeholder' => 'Enter Email']) ?>
-                        <?= $form->field($model, 'phone')->input('number', ['class' => 'form-control', 'placeholder' => 'Enter Phone Number']) ?>
+                        <?= $form->field($model, 'phone')->input('number', ['class' => 'form-control', 'placeholder' => 'Enter Phone Number','id' => 'phone-input']) ?>
 
                         <?= $form->field($model, 'gender')->radioList([
                             'male' => 'Male',
@@ -46,7 +47,7 @@ use yii\helpers\Html;
                     <!-- Right Column -->
                     <div class="col-md-6">
                         <?= $form->field($model, 'address')->textarea(['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Enter Address']) ?>
-                        <?= $form->field($model, 'pincode')->input('number', ['class' => 'form-control', 'placeholder' => 'Enter Pincode']) ?>
+                        <?= $form->field($model, 'pincode')->input('number', ['class' => 'form-control', 'placeholder' => 'Enter Pincode','id' => 'pincode-input']) ?>
                         <?= $form->field($model, 'district')->textInput(['class' => 'form-control', 'placeholder' => 'Enter District']) ?>
 
                         <?= $form->field($model, 'state')->widget(Select2::class, [
@@ -61,8 +62,17 @@ use yii\helpers\Html;
                             'class' => 'form-control'
                         ]) ?>
 
-                        <?= $form->field($model, 'password')->passwordInput(['class' => 'form-control', 'placeholder' => 'Enter Password']) ?>
-                        <?= $form->field($model, 'confirm_password')->passwordInput(['class' => 'form-control', 'placeholder' => 'Confirm Password']) ?>
+                       <?php if ($model->isNewRecord): ?>
+                                <?= $form->field($model, 'password')->passwordInput([
+                                    'class' => 'form-control', 
+                                    'placeholder' => 'Enter Password'
+                                ]) ?>
+
+                                <?= $form->field($model, 'confirm_password')->passwordInput([
+                                    'class' => 'form-control', 
+                                    'placeholder' => 'Confirm Password'
+                                ]) ?>
+                            <?php endif; ?>
 
                         <div class="mt-4 d-flex justify-content-between">
                             <!-- Submit Button on Left -->
@@ -81,3 +91,22 @@ use yii\helpers\Html;
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function () {
+    $('#phone-input').on('input', function () {
+        let value = $(this).val();
+        if (value.length > 10) {
+            $(this).val(value.slice(0, 10));
+        }
+    });
+
+    $('#pincode-input').on('input', function () {
+        let value = $(this).val();
+        if (value.length > 6) {
+            $(this).val(value.slice(0, 6));
+        }
+    });
+});
+</script>
+

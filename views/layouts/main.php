@@ -107,7 +107,11 @@ $this->beginPage();
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <?php
-                        $username = $session->get('username');
+                        $username=false;
+                        if(isset(Yii::$app->session->isLoggedIn)){
+
+                            $username = $session->get('username');
+                        }
                         ?>
                         <span class="navbar-text me-2">
                             <?= $username ? "Hello, " . Html::encode($username) : "Hi user" ?>

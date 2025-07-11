@@ -38,7 +38,10 @@ class AdminController extends Controller{
         if($model->load(Yii::$app->request->post()) && $model->validate()){
                 $model->usertype=2;
                 $model->is_verified=1;
-                $model->save(false);
+                if($model->save()){
+                    Yii::$app->session->setFlash('success', 'Account Creation Successfull');
+                    return $this->redirect(['admin/admin']);
+                }
         }
 
 
@@ -51,10 +54,16 @@ class AdminController extends Controller{
 
         $this->layout='dashboard';
         $model=User::findOne($id);
+        $model->scenario='createadmin';
+        
+
         if($model->load(Yii::$app->request->post())&& $model->validate()){
-            $model->save(false);
-             return $this->redirect(['admin']);
+            if($model->save()){
+                Yii::$app->session->setFlash('success', 'Account Updation Successfull');
+                return $this->redirect(['admin/admin']);
+            }
         }
+        
         return $this->render('create',[
             'model'=>$model
         ]);
@@ -66,20 +75,17 @@ class AdminController extends Controller{
         $admin=User::findOne($id);
 
         $admin->status=0;
+        $admin->username = 'Account deleted @'.date('Y-m-d H:i:s').' - '.$admin->username;
         $admin->save(false);
         return $this->redirect(['admin']);
 
     }
 
-    public function actionView($id)
+    public function actionView($id) //This is for the rbac controller
         {
             $this->layout = 'dashboard';
 
             $model = User::findOne($id); 
-
-            if (!$model) {
-                throw new \yii\web\NotFoundHttpException("Admin not found.");
-            }
 
             if (Yii::$app->request->isPost) {
                 
@@ -90,6 +96,7 @@ class AdminController extends Controller{
 
                 if ($model->save(false)) {
                     Yii::$app->session->setFlash('success', 'Permissions saved successfully!');
+                    return $this->redirect(['admin']);
                 } else {
                     Yii::$app->session->setFlash('error', 'Failed to save permissions!');
                 }

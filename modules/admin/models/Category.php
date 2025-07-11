@@ -24,7 +24,7 @@ class Category extends ActiveRecord
             [['status'], 'integer'],
             [['c_name'], 'string', 'max' => 200],
             [['seourl'], 'string', 'max' => 50],
-               [['c_name'], 'unique', 'message' => 'This category name has already been taken.'],
+            [['c_name'], 'unique', 'message' => 'This category name has already been taken.'],
             [['seourl'], 'unique', 'message' => 'This SEO URL has already been taken.'],
 
            

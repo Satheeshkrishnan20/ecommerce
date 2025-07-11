@@ -1,10 +1,9 @@
 <?php
 use dosamigos\chartjs\ChartJs;
 
-$usertype = Yii::$app->session->get('usertype');
-$rbac = Yii::$app->session->get('rbac', []);
-
-$showDashboard = $usertype == 3 || ($usertype == 2 && in_array('access_dashboard', $rbac));
+$user = Yii::$app->user->identity;
+$usertype = $user?->usertype ?? null;
+$showDashboard = $usertype == 3 || ($usertype == 2 && $user?->hasPermission('access_dashboard'));
 ?>
 
 <?php if ($showDashboard): ?>
@@ -33,9 +32,9 @@ $showDashboard = $usertype == 3 || ($usertype == 2 && in_array('access_dashboard
                     'datasets' => [[
                         'label' => "Products",
                         'backgroundColor' => [
-                            'rgba(177, 0, 38, 0.5)',   
-                            'rgba(13, 85, 133, 0.5)', 
-                            'rgba(255, 183, 0, 0.5)'  
+                            'rgba(177, 0, 38, 0.5)',
+                            'rgba(13, 85, 133, 0.5)',
+                            'rgba(255, 183, 0, 0.5)'
                         ],
                         'borderColor' => [
                             'rgba(255, 99, 132, 1)',
@@ -72,9 +71,9 @@ $showDashboard = $usertype == 3 || ($usertype == 2 && in_array('access_dashboard
                     'datasets' => [[
                         'label' => "Products",
                         'backgroundColor' => [
-                            'rgba(177, 0, 38, 0.5)',   
-                            'rgba(13, 85, 133, 0.5)',  
-                            'rgba(255, 183, 0, 0.5)'   
+                            'rgba(177, 0, 38, 0.5)',
+                            'rgba(13, 85, 133, 0.5)',
+                            'rgba(255, 183, 0, 0.5)'
                         ],
                         'borderColor' => [
                             'rgba(255, 99, 132, 1)',

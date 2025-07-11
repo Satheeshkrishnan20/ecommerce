@@ -7,13 +7,9 @@ $this->title = 'Admin Login';
 
 <div class="d-flex justify-content-center align-items-center">
     <div class="card shadow p-4" style="width: 100%; max-width: 400px;">
-        <h2 class="text-center mb-4"><?= Html::encode('Create Admin') ?></h2>
+        <h4 class="text-center mb-4"><?= $model->isNewRecord ? 'Create Admin' : 'Update Admin' ?></h4>
 
-        <?php if (Yii::$app->session->hasFlash('error')): ?>
-            <div class="alert alert-danger text-center">
-                <?= Yii::$app->session->getFlash('error') ?>
-            </div>
-        <?php endif; ?>
+       
 
         <?php $form = ActiveForm::begin([
             'id' => 'login-form',
@@ -40,7 +36,7 @@ $this->title = 'Admin Login';
 
         <!-- ✅ Buttons -->
         <div class="d-flex justify-content-between mt-3">
-            <?= Html::submitButton('Create', ['class' => 'btn btn-primary']) ?>
+            <?= Html::submitButton('Save', ['class' => 'btn btn-primary']) ?>
             <?= Html::a('Back', ['admin/admin'], ['class' => 'btn btn-secondary']) ?>
         </div>
 

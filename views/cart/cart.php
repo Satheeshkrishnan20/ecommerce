@@ -134,7 +134,7 @@ use yii\helpers\Url;
 
 <div class="cart-container">
 
-    <!-- LEFT: PRODUCT LIST -->
+  
     <div style="flex: 1;">
         <?= ListView::widget([
             'dataProvider' => $dataProvider,
@@ -171,7 +171,7 @@ use yii\helpers\Url;
         ]) ?>
     </div>
 
-    <!-- RIGHT: SUMMARY PANEL -->
+   
     <div class="cart-summary-table">
         <table>
             <thead>

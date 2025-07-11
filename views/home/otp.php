@@ -22,12 +22,7 @@ $email = Yii::$app->session->get('user_otp_verification_email');
                     <h1 class="card-title h3 mb-0"><?= Html::encode($this->title) ?></h1>
                 </div>
                 <div class="card-body">
-                    <?php if (Yii::$app->session->hasFlash('success')): ?>
-                        <?= Alert::widget([
-                            'options' => ['class' => 'alert-success'],
-                            'body' => Yii::$app->session->getFlash('success'),
-                        ]) ?>
-                    <?php endif; ?>
+                  
 
                     <?php if (Yii::$app->session->hasFlash('error')): ?>
                         <?= Alert::widget([
@@ -219,14 +214,16 @@ $this->registerCss("
     });
 </script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- only if not loaded -->
 
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
 
 <script>
 $(document).ready(function () {
     const $resendBtn = $('#resend-otp-btn');
     const $countLabel = $('#count');
     const $nowLabel = $('#now');
+    const $otpInputs = $('.otp-input');
 
     let timer = null;
     let countdown = 20;
@@ -250,31 +247,34 @@ $(document).ready(function () {
         }, 1000);
     }
 
-    // Initial start on page load
+    // Initial countdown start
     startCountdown();
 
     $resendBtn.on('click', function (e) {
         e.preventDefault();
 
-        // Immediately disable the button again and restart timer
         clearInterval(timer);
-        countdown = 60;
+        countdown = 20;
         startCountdown();
 
-        // Send the AJAX request
-        $.ajax({
-            url: '<?= \yii\helpers\Url::to(['home/resend']) ?>',
-            type: 'POST',
-            headers: {
-                'X-CSRF-Token': '<?= Yii::$app->request->getCsrfToken() ?>'
-            },
-            success: function () {
-                console.log('OTP resent successfully');
-            },
-            error: function () {
-                console.log('Error resending OTP');
-            }
-        });
+        // Send the AJAX request to resend OTP
+       $.ajax({
+    url: '<?= \yii\helpers\Url::to(['home/resend']) ?>',
+    type: 'POST',
+    headers: {
+        'X-CSRF-Token': '<?= Yii::$app->request->getCsrfToken() ?>'
+    },
+    success: function (res) {
+        console.log('OTP resent successfully');
+        $('.otp-input').val('');
+        $('.otp-input').first().focus();
+    },
+    error: function (xhr) {
+        console.log('Error resending OTP', xhr.responseText);
+        alert('Failed to resend OTP');
+    }
+});
+
     });
 });
 </script>

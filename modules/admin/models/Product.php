@@ -52,7 +52,7 @@ public function rules()
         [['product_name'], 'string', 'max' => 200],
         [['product_description'], 'string', 'max' => 222],
         [['category_id'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['category_id' => 'c_id']],
-        ['product_name', 'validateUniqueProductName', 'on' => ['create', 'update']],
+        ['product_name', 'unique', 'on' => ['create', 'update']],
     ];
 }
 

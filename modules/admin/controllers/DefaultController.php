@@ -1,7 +1,7 @@
 <?php
 
 namespace app\modules\admin\controllers;
-
+use app\components\Helper;
 use app\models\User;
 use app\modules\admin\models\Product; // Assuming Product model is used for counts
 use app\modules\admin\models\Category; // Assuming Category model is used for counts
@@ -21,38 +21,33 @@ class DefaultController extends Controller
      * Handles the login process.
      * @return string|\yii\web\Response
      */
-   public function actionLogin()
+public function actionLogin()
 {
-    $model = new User;
+    $model = new User();
     $model->scenario = 'admin';
 
     if ($model->load(Yii::$app->request->post())) {
-        $user = User::find()->where([
-            'username' => $model->username,
-            'password' => $model->password,
-        ])->one();
+        $user = User::findOne(['username' => $model->username]);
 
-        if ($user) {
+        if ($user && $user->validatePassword($model->password)) {
+
             if ($user->usertype == 1) {
-                // ❌ Block usertype 1
                 Yii::$app->session->setFlash('error', 'Access denied for this user type.');
                 return $this->redirect(['login']);
             }
 
-            // ✅ Common session data
-            Yii::$app->session->set('login', true);
-            Yii::$app->session->set('user_id', $user->id);
-            Yii::$app->session->set('username', $user->username);
-            Yii::$app->session->set('usertype', $user->usertype);
-
-            // ✅ For Admin (type 2), set RBAC
-            if ($user->usertype == 2) {
-                $rbac = json_decode($user->rbac, true);
-                Yii::$app->session->set('rbac', is_array($rbac) ? $rbac : []);
+            if (Yii::$app->user->login($user)) {
+                // ✅ Optional RBAC
+                if ($user->usertype == 2) {
+                    $rbac = json_decode($user->rbac, true);
+                    Yii::$app->session->set('rbac', is_array($rbac) ? $rbac : []);
+                }
+                Helper::set('login',$user->username);
+                Yii::$app->session->setFlash('success', 'Welcome back, ' . $user->username . '!');
+                return $this->redirect(['dashboard']); // ✅ Only one return here
+            } else {
+                Yii::$app->session->setFlash('error', 'Login failed: could not log in.');
             }
-
-            Yii::$app->session->setFlash('success', 'Welcome back, ' . $user->username . '!');
-            return $this->redirect(['dashboard']);
         } else {
             Yii::$app->session->setFlash('error', 'Invalid username or password.');
         }
@@ -62,13 +57,15 @@ class DefaultController extends Controller
 }
 
 
+
+
     /**
      * Renders the dashboard view.
      * @return string|\yii\web\Response
      */
  public function actionDashboard()
-{
-    $login = Yii::$app->session->get('login');
+    {
+    $login = Helper::get('login');
 
     if ($login) {
         $this->layout = 'dashboard';
@@ -103,13 +100,13 @@ class DefaultController extends Controller
     }
 }
 
-        public function actionCreatecustomer(){
-            $model=new Auth();
-            $this->layout='dashboard';
-             return $this->render('/home/signup', [ 
-            'model' => $model,
-        ]);
-        }
+        // public function actionCreatecustomer(){
+        //     $model=new Auth();
+        //     $this->layout='dashboard';
+        //      return $this->render('/home/signup', [ 
+        //     'model' => $model,
+        // ]);
+        // }
 
 
     /**

@@ -32,7 +32,7 @@ class CategoryController extends Controller
      public function actionCategory(){
         $this->layout='dashboard';
         $dataProvider=new ActiveDataProvider([
-            'query'=>Category::find()
+            'query'=>Category::find()->where(['status'=>1])
         ]);
         return $this->render('category',[
             'dataProvider'=>$dataProvider
@@ -53,7 +53,7 @@ class CategoryController extends Controller
        
         if ($model->save(false)) {
             Yii::$app->session->setFlash('success', 'Category created successfully.');
-            return $this->refresh();
+            return $this->redirect(['category/category']);
         }
             }
 
@@ -81,13 +81,27 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function actionDelete($id){
-        $this->layout='dashboard';
-        $model = Category::findOne($id)->delete();
-        Yii::$app->session->setFlash('success', 'Category deleted successfully.');
+  public function actionDelete($id)
+{
+    Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        return $this->redirect(['category']);
+    if (!Yii::$app->request->isAjax || !Yii::$app->request->isPost) {
+        return ['success' => false, 'message' => 'Invalid request.'];
     }
+
+    $model = Category::findOne($id);
+
+    if (!$model) {
+        return ['success' => false, 'message' => 'Category not found.'];
+    }
+        $model->status=0;
+    if ($model->save()) {
+        return ['success' => true, 'message' => 'Category deleted successfully.'];
+    } else {
+        return ['success' => false, 'message' => 'Failed to delete category.'];
+    }
+}
+
 
 
 

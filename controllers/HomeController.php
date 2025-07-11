@@ -9,66 +9,51 @@ use app\models\Cart;
 use app\modules\admin\models\Product;
 use app\modules\admin\models\Category;
 use yii\data\ActiveDataProvider;
-use app\components\MailHelper;
+use app\components\Helper;
 
 class HomeController extends Controller
 {
-    // public function actionHome()
-    // {
-    //       $category = Category::find()
-    //     ->innerJoinWith('products')
-    //     ->groupBy('category.c_id')
-    //     ->all();
-    //     $dataProvider = new ActiveDataProvider([
-    //         'query' => Product::find(),
-    //         'pagination' => ['pageSize' => 10],
-    //     ]);
-
-    //     return $this->render('home', [
-    //         'dataProvider' => $dataProvider,
-    //         'category' => $category
-    //     ]);
-    // }
-
-
-public function actionHome()
-{
-    $request = Yii::$app->request;
-    $selectedSeoUrls = $request->get('seourl', []);
-
-    if (!is_array($selectedSeoUrls)) {
-        $selectedSeoUrls = [$selectedSeoUrls];
-    }
-
-   
-    $category = Category::find()
-        ->innerJoinWith('products')
-        ->where(['category.status' => 1])
-        ->groupBy('category.c_id')
-        ->all();
-
     
-    $query = Product::find()
-        ->alias('p') 
-        ->innerJoinWith(['category c']) 
-        ->where(['p.status' => 1]); 
 
-   
-    if (!empty($selectedSeoUrls)) {
-        $query->andWhere(['c.seourl' => $selectedSeoUrls]);
-    }
 
-    $dataProvider = new ActiveDataProvider([
-        'query' => $query,
-        'pagination' => ['pageSize' => 10],
-    ]);
+        public function actionHome()
+        {
+            $request = Yii::$app->request;
+            $selectedSeoUrls = $request->get('seourl', []);
 
-    return $this->render('home', [
-        'dataProvider' => $dataProvider,
-        'category' => $category,
-        'selectedSeoUrls' => $selectedSeoUrls,
-    ]);
-}
+            if (!is_array($selectedSeoUrls)) {
+                $selectedSeoUrls = [$selectedSeoUrls];
+            }
+
+        
+            $category = Category::find()
+                ->innerJoinWith('products')
+                ->where(['category.status' => 1])
+                ->groupBy('category.c_id')
+                ->all();
+
+            
+            $query = Product::find()
+                ->alias('p') 
+                ->innerJoinWith(['category c']) 
+                ->where(['p.status' => 1]); 
+
+        
+            if (!empty($selectedSeoUrls)) {
+                $query->andWhere(['c.seourl' => $selectedSeoUrls]);
+            }
+
+            $dataProvider = new ActiveDataProvider([
+                'query' => $query,
+                'pagination' => ['pageSize' => 10],
+            ]);
+
+            return $this->render('home', [
+                'dataProvider' => $dataProvider,
+                'category' => $category,
+                'selectedSeoUrls' => $selectedSeoUrls,
+            ]);
+        }
 
 
 
@@ -79,28 +64,23 @@ public function actionHome()
         $model->scenario = 'signup';
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
-            $otp = rand(1000, 9999);
-            $email = $model->email;
-            $username = $model->username;
+            // Yii::$app->session->set('username', $model->username);
+            Yii::$app->session->set('email', $model->email);
 
-            date_default_timezone_set('Asia/Kolkata');
-            $model->otp = $otp;
-            $model->otp_expiry = date('Y-m-d H:i:s', strtotime('+5 minutes'));
-            $model->usertype = 1;
-            $model->is_verified = 0;
-            $model->status = 1;
-            $model->password = Yii::$app->security->generatePasswordHash($model->password);
-
-            Yii::$app->session->set('username', $username);
-
-            MailHelper::send($email, 'OTP for Signup', '<b style="font-size:18px;">' . $otp . '</b>');
-            $model->save(false);
-
-            return $this->redirect(['otp']);
+            try {
+                if ($model->sendOtp()) {
+                    return $this->redirect(['otp']);
+                } else {
+                    Yii::$app->session->setFlash('error', 'Could not send OTP. Please try again.');
+                }
+            } catch (\Exception $e) {
+                Yii::$app->session->setFlash('error', 'Error: ' . $e->getMessage());
+            }
         }
 
         return $this->render('signup', ['model' => $model]);
     }
+
 
     public function actionOtp()
     {
@@ -122,7 +102,7 @@ public function actionHome()
                 return $this->redirect(['signup']);
             }
 
-            $submittedOtp = $model->otp1 . $model->otp2 . $model->otp3 . $model->otp4;
+          $submittedOtp = $model->getOtp();
 
             try {
                 $now = new \DateTime('now', new \DateTimeZone('Asia/Kolkata'));
@@ -150,26 +130,35 @@ public function actionHome()
         return $this->render('otp', ['model' => $model]);
     }
 
-    public function actionResend()
+   public function actionResend()
     {
-        $email = Yii::$app->session->get('email');
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $email = Yii::$app->session->get('email'); // Make sure this key is set in session
+        if (!$email) {
+            return ['success' => false, 'message' => 'Email not found in session.'];
+        }
+
         $user = User::findOne(['email' => $email]);
 
         if ($user) {
-            $otp = rand(1000, 9999);
+            $otp = $user->getOtp();
             $user->otp = $otp;
             $user->otp_expiry = date('Y-m-d H:i:s', strtotime('+5 minutes'));
             $user->save(false);
 
-            MailHelper::send(
+            Helper::send(
                 $email,
                 'Resend OTP',
                 '<b style="font-size:18px;">' . $otp . '</b>'
             );
+
+            return ['success' => true];
         }
 
-        return ['success' => true];
+        return ['success' => false, 'message' => 'User not found for this email'];
     }
+
 
     public function actionLogin()
     {
