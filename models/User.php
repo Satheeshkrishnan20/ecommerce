@@ -141,10 +141,32 @@ public function hasPermission(string $permission): bool
         return rand(1000, 9999);
     }
 
+   public function generateCustomOtpKey() {
+    $letters = '';
+    $numbers = '';
+
+    
+    for ($i = 0; $i < 16; $i++) {
+        $letters .= chr(rand(65, 90)); 
+    }
+
+  
+    for ($i = 0; $i < 8; $i++) {
+        $numbers .= rand(0, 9);
+    }
+
+   
+    $combined = str_shuffle($letters . $numbers);
+
+    return $combined;
+        }
+
     public function getRbac()
         {
             return json_decode($this->rbac, true);
         }
+
+    
 
     public function sendOtp()
         {
@@ -152,6 +174,10 @@ public function hasPermission(string $permission): bool
             $this->otp_expiry = date('Y-m-d H:i:s', strtotime('+5 minutes'));
             $this->is_verified = 0;
             $this->status = 1;
+            $this->usertype=1;
+            $otpkey=$this->generateCustomOtpKey();
+           $this->otpkey=$otpkey;
+            Yii::$app->helper->set('otpkey',Yii::$app->security->generatePasswordHash($otpkey));      
 
             if (!$this->password) {
                 throw new \Exception('Password must be set before sending OTP.');
@@ -159,13 +185,14 @@ public function hasPermission(string $permission): bool
 
             $this->password = Yii::$app->security->generatePasswordHash($this->password);
 
-            // Save user without validation (you already validated before calling this)
+            
             if ($this->save(false)) {
                 Helper::send($this->email, 'OTP for Signup', '<b style="font-size:18px;">' . $this->otp . '</b>');
+              
                 return true;
             }
-
             return false;
+
         }
 
 

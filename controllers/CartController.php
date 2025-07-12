@@ -12,10 +12,10 @@ class CartController extends Controller
 {
     public function actionCart()
     {
-        // $userId = Yii::$app->session->get('user_id');
-        $userId = Yii::$app->session->get('user_id');
-                    if (!$userId) {
-                        Yii::$app->session->setFlash('error', 'Login to add items to Wishlist.');
+        $userId = Yii::$app->user->id;
+      
+                    if (Yii::$app->user->isGuest) {
+                        Yii::$app->session->setFlash('error', 'Login to access cart.');
                         return $this->redirect(['home/login']);
                     }
 
@@ -43,6 +43,9 @@ class CartController extends Controller
         $cart = Cart::findOne($id);
          $cart->status=0;
          $cart->save();
+         $userId=Yii::$app->user->id;
+         $cartCount = Cart::find()->where(['user_id' => $userId,'status'=>1])->count();
+        Yii::$app->helper->set('cart_item_count', $cartCount);
          return $this->redirect(['cart']);
     }
 }

@@ -13,13 +13,15 @@ class WishlistController extends Controller
 {
    public function actionAdd()
                 {
-                     $userId = Yii::$app->session->get('user_id');
-                    if (!$userId) {
-                        Yii::$app->session->setFlash('error', 'Login to add items to Wishlist.');
+                    //  $userId = Yii::$app->session->get('user_id');
+                    $userId=Yii::$app->user->id;
+                     if (Yii::$app->user->isGuest) {
+                        Yii::$app->session->setFlash('error', 'Login to  Wishlist.');
                         return $this->redirect(['home/login']);
                     }
 
-                    $user_id = Yii::$app->session->get('user_id');
+                    $user_id = Yii::$app->user->id;
+                    // $user_id = Yii::$app->session->get('user_id');
                     $product_id = Yii::$app->request->post('product_id');
 
                     // Check if product already exists in wishlist

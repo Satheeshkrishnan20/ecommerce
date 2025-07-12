@@ -43,6 +43,8 @@ $email = Yii::$app->session->get('user_otp_verification_email');
                             'validateOnSubmit' => false,
                     ]); ?>
 
+                    <?= Html::hiddenInput('User[otpkey]', $model->otpkey) ?>
+
                     <div class="form-group mb-4">
                         <label class="form-label text-center d-block">Enter OTP</label>
                         <div class="d-flex justify-content-center otp-input-container">
@@ -242,7 +244,7 @@ $(document).ready(function () {
                 $resendBtn.prop('disabled', false).css('pointer-events', 'auto');
                 $countLabel.text('');
                 $nowLabel.text('');
-                countdown = 60; // reset for next click
+                countdown = 20; // reset for next click
             }
         }, 1000);
     }
@@ -251,6 +253,8 @@ $(document).ready(function () {
     startCountdown();
 
     $resendBtn.on('click', function (e) {
+        $('.otp-input').val('');
+                $('.otp-input').first().focus();
         e.preventDefault();
 
         clearInterval(timer);
@@ -258,21 +262,21 @@ $(document).ready(function () {
         startCountdown();
 
         // Send the AJAX request to resend OTP
-       $.ajax({
-    url: '<?= \yii\helpers\Url::to(['home/resend']) ?>',
-    type: 'POST',
-    headers: {
-        'X-CSRF-Token': '<?= Yii::$app->request->getCsrfToken() ?>'
-    },
-    success: function (res) {
-        console.log('OTP resent successfully');
-        $('.otp-input').val('');
-        $('.otp-input').first().focus();
-    },
-    error: function (xhr) {
-        console.log('Error resending OTP', xhr.responseText);
-        alert('Failed to resend OTP');
-    }
+            $.ajax({
+            url: '<?= \yii\helpers\Url::to(['home/resend']) ?>',
+            type: 'POST',
+            headers: {
+                'X-CSRF-Token': '<?= Yii::$app->request->getCsrfToken() ?>'
+            },
+            success: function (res) {
+                console.log('OTP resent successfully');
+                $('.otp-input').val('');
+                $('.otp-input').first().focus();
+            },
+            error: function (xhr) {
+                console.log('Error resending OTP', xhr.responseText);
+                // alert('Failed to resend OTP');
+            }
 });
 
     });
