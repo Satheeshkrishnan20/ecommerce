@@ -8,28 +8,7 @@ if (!is_array($granted)) {
 }
 ?>
 
-<style>
-    table.permission-table {
-        border-collapse: collapse;
-        width: 100%;
-        max-width: 900px;
-    }
-    table.permission-table th,
-    table.permission-table td {
-        border: 1px solid #ccc;
-        text-align: center;
-        padding: 15px;
-    }
-    label.permission-label {
-        margin: 0 10px;
-        font-weight: normal;
-    }
-    input[type="checkbox"] {
-        width: 18px;
-        height: 18px;
-        vertical-align: middle;
-    }
-</style>
+
 
 <h4 class="text-center mb-4">Grant / Revoke Permissions for: <?= Html::encode($model->username) ?></h4>
 

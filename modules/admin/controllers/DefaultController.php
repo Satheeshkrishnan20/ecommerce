@@ -1,55 +1,33 @@
 <?php
 
 namespace app\modules\admin\controllers;
+
 use app\components\Helper;
 use app\models\User;
-use app\modules\admin\models\Product; // Assuming Product model is used for counts
-use app\modules\admin\models\Category; // Assuming Category model is used for counts
-use yii\web\UploadedFile; // Not used in this controller snippet, but kept for context
+use app\modules\admin\models\Product;
+use app\modules\admin\models\Category;
 use yii\web\Controller;
-use yii\data\ActiveDataProvider; // Not used in this controller snippet, but kept for context
-use Yii; // Correctly use Yii for clarity
+use Yii;
 
-/**
- * Default controller for the `admin` module
- */
 class DefaultController extends Controller
 {
-    // public $layout = 'admin'; // Commented out as dashboard is set in actionDashboard
-
     /**
-     * Handles the login process.
-     * @return string|\yii\web\Response
+     * Handles the admin login process.
      */
-public function actionLogin()
+   public function actionLogin()
 {
-    $model = new User();
-    $model->scenario = 'admin';
+    $model = new User(['scenario' => 'admin']);
+
+    if (!Yii::$app->user->isGuest) {
+        return $this->redirect(['dashboard']);
+    }
 
     if ($model->load(Yii::$app->request->post())) {
-        $user = User::findOne(['username' => $model->username]);
-
-        if ($user && $user->validatePassword($model->password)) {
-
-            if ($user->usertype == 1) {
-                Yii::$app->session->setFlash('error', 'Access denied for this user type.');
-                return $this->redirect(['login']);
-            }
-
-            if (Yii::$app->user->login($user)) {
-                // ✅ Optional RBAC
-                if ($user->usertype == 2) {
-                    $rbac = json_decode($user->rbac, true);
-                    Yii::$app->session->set('rbac', is_array($rbac) ? $rbac : []);
-                }
-                Helper::set('login',$user->username);
-                Yii::$app->session->setFlash('success', 'Welcome back, ' . $user->username . '!');
-                return $this->redirect(['dashboard']); // ✅ Only one return here
-            } else {
-                Yii::$app->session->setFlash('error', 'Login failed: could not log in.');
-            }
+        if ($model->Adminlogin()) {
+            Yii::$app->helper->setFlash('success', 'Welcome back, ' . Yii::$app->user->identity->username . '!');
+            return $this->redirect(['dashboard']);
         } else {
-            Yii::$app->session->setFlash('error', 'Invalid username or password.');
+            Yii::$app->helper->setFlash('error', Html::errorSummary($model));
         }
     }
 
@@ -57,71 +35,52 @@ public function actionLogin()
 }
 
 
-
-
     /**
-     * Renders the dashboard view.
-     * @return string|\yii\web\Response
+     * Renders the admin dashboard view.
      */
- public function actionDashboard()
+    public function actionDashboard()
     {
-    $login = Helper::get('login');
-
-    if ($login) {
-        $this->layout = 'dashboard';
-
+      
         
-        $categoryCount = Category::find()->count();
-        $productCount = Product::find()->count();
+        $login=(!Yii::$app->user->isGuest)?true:false;
 
-       
-        $productPerCategory = (new \yii\db\Query())
-            ->select(['category.c_name AS category_name', 'COUNT(product.p_id) AS product_count'])
-            ->from('product')
-            ->leftJoin('category', 'product.category_id = category.c_id')
-            ->groupBy('category.c_id')
-            ->all();
+        if ($login) {
+            $this->layout = 'header';
 
-        
-        $latestProducts = Product::find()
-            ->orderBy(['p_id' => SORT_DESC])
-            ->limit(5)
-            ->all();
+            $categoryCount = Category::find()->count();
+            $productCount = Product::find()->count();
 
-        return $this->render('dashboard', [
-            'cat' => $categoryCount,
-            'pro' => $productCount,
-            'chartData' => $productPerCategory,
-            'latestProducts' => $latestProducts,
-        ]);
-    } else {
-        Yii::$app->session->setFlash('info', 'Please log in to access the dashboard.');
+            $productPerCategory = (new \yii\db\Query())
+                ->select(['category.c_name AS category_name', 'COUNT(product.p_id) AS product_count'])
+                ->from('product')
+                ->leftJoin('category', 'product.category_id = category.c_id')
+                ->groupBy('category.c_id')
+                ->all();
+
+            $latestProducts = Product::find()
+                ->orderBy(['p_id' => SORT_DESC])
+                ->limit(5)
+                ->all();
+
+            return $this->render('dashboard', [
+                'cat' => $categoryCount,
+                'pro' => $productCount,
+                'chartData' => $productPerCategory,
+                'latestProducts' => $latestProducts,
+            ]);
+        }
+
+        Yii::$app->helper->setFlash('info', 'Please log in to access the dashboard.');
         return $this->redirect(['default/login']);
     }
-}
-
-        // public function actionCreatecustomer(){
-        //     $model=new Auth();
-        //     $this->layout='dashboard';
-        //      return $this->render('/home/signup', [ 
-        //     'model' => $model,
-        // ]);
-        // }
-
 
     /**
-     * Handles the logout process.
-     * @return \yii\web\Response
+     * Handles the admin logout process.
      */
     public function actionLogout()
     {
-        // Clear all session data
-        Yii::$app->session->destroy();
-
-        // Set a success flash message for logout
-        Yii::$app->session->setFlash('success', 'You have been successfully logged out.');
-
-        // Redirect to login page
+        Yii::$app->helper->destroy(); 
+        Yii::$app->helper->setFlash('success', 'You have been successfully logged out.');
         return $this->redirect(['default/login']);
     }
 }

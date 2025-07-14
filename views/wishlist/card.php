@@ -3,6 +3,7 @@ use yii\helpers\Html;
 
 /** @var $model app\models\Wishlist */
 
+
 $product = $model->product;
 if ($product === null) return;
 
@@ -32,12 +33,7 @@ $wishlistId = $model->wishlist_id;
         <?= Html::beginForm(['home/add'], 'post', ['class' => 'mt-auto']) ?>
             <?= Html::hiddenInput('product_id', $productId) ?>
             <div class="d-flex align-items-center mb-2">
-                <label class="me-2 mb-0">Quantity:</label>
-                <div class="input-group input-group-sm" style="width: 110px;">
-                    <button type="button" class="btn btn-outline-secondary minus-btn">−</button>
-                    <input type="text" name="quantity" class="form-control text-center quantity-input" value="1" readonly>
-                    <button type="button" class="btn btn-outline-secondary plus-btn">+</button>
-                </div>
+              
             </div>
             <?= Html::submitButton('Add to Cart', ['class' => 'btn btn-success btn-sm w-100']) ?>
         <?= Html::endForm() ?>
@@ -49,22 +45,11 @@ $wishlistId = $model->wishlist_id;
     </div>
 </div>
 
-<?php
-$this->registerCss(<<<CSS
-.product-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    transition: 0.2s ease;
-}
 
-.product-card:hover {
-    transform: translateY(-3px);
-}
-CSS);
 
-$this->registerJs(<<<JS
+
+
+<script>
 $('.minus-btn').click(function() {
     var input = $(this).siblings('.quantity-input');
     var value = parseInt(input.val());
@@ -75,5 +60,4 @@ $('.plus-btn').click(function() {
     var input = $(this).siblings('.quantity-input');
     input.val(parseInt(input.val()) + 1);
 });
-JS);
-?>
+</script>

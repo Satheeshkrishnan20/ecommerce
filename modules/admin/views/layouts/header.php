@@ -4,6 +4,10 @@ use yii\helpers\Url;
 
 $this->beginPage();
 
+use app\components\assets\AppAsset;
+
+AppAsset::register($this);
+
 ?>
 
 <!DOCTYPE html>
@@ -16,37 +20,11 @@ $this->beginPage();
     <title>Admin Panel</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <style>
-    .flash-messages-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1050;
-        max-width: 350px;
-        width: 100%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
-    @media (min-width: 576px) {
-        .flash-messages-container {
-            width: auto;
-            padding: 0;
-        }
-    }
-    .flash-messages-container .alert {
-        margin-bottom: 10px;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    }
-    .has-error .help-block,
-    .has-error .invalid-feedback {
-        color: red;
-        font-size: 0.9em;
-    }
-    </style>
+    
 </head>
 <body>
 <?php $this->beginBody(); ?>

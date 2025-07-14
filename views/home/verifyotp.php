@@ -11,7 +11,6 @@ use yii\bootstrap5\Alert;
 $this->title = 'Verify OTP';
 $this->params['breadcrumbs'][] = $this->title;
 
-$email = Yii::$app->session->get('user_otp_verification_email');
 ?>
 
 <div class="site-verify-otp">
@@ -24,16 +23,11 @@ $email = Yii::$app->session->get('user_otp_verification_email');
                 <div class="card-body">
                   
 
-                    <?php if (Yii::$app->session->hasFlash('error')): ?>
-                        <?= Alert::widget([
-                            'options' => ['class' => 'alert-danger'],
-                            'body' => Yii::$app->session->getFlash('error'),
-                        ]) ?>
-                    <?php endif; ?>
+                  
 
                     <p class="text-center mb-4">
                         Please enter the 4-digit OTP sent to your email address:
-                        <strong><?= Html::encode($email) ?></strong>
+                  
                     </p>
 
                     <?php $form = ActiveForm::begin([
@@ -123,39 +117,6 @@ $email = Yii::$app->session->get('user_otp_verification_email');
     </div>
 </div>
 
-<?php
-$this->registerCss("
-    .otp-input-container .otp-input {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-align: center;
-        border: 1px solid #ced4da;
-        border-radius: .25rem;
-        -moz-appearance: textfield;
-    }
-    .otp-input-container .otp-input:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
-    }
-    .otp-input-container .otp-input::-webkit-outer-spin-button,
-    .otp-input-container .otp-input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    .otp-input-container .help-block-error {
-        position: absolute;
-        width: 100%;
-        left: 0;
-        top: 100%;
-        font-size: 0.875em;
-        color: #dc3545;
-        text-align: center;
-    }
-");
-?>
-
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const otpInputs = document.querySelectorAll('.otp-input');
@@ -228,7 +189,7 @@ $(document).ready(function () {
     const $otpInputs = $('.otp-input');
 
     let timer = null;
-    let countdown = 20;
+    let countdown = 120;
 
     function startCountdown() {
         $resendBtn.prop('disabled', true).css('pointer-events', 'none');
@@ -244,7 +205,7 @@ $(document).ready(function () {
                 $resendBtn.prop('disabled', false).css('pointer-events', 'auto');
                 $countLabel.text('');
                 $nowLabel.text('');
-                countdown = 20; // reset for next click
+                countdown = 120; // reset for next click
             }
         }, 1000);
     }
@@ -255,10 +216,11 @@ $(document).ready(function () {
     $resendBtn.on('click', function (e) {
         $('.otp-input').val('');
                 $('.otp-input').first().focus();
+                alert('Resend OTP sent Seccessfully');
         e.preventDefault();
 
         clearInterval(timer);
-        countdown = 20;
+        countdown = 120;
         startCountdown();
 
         // Send the AJAX request to resend OTP
@@ -275,7 +237,7 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 console.log('Error resending OTP', xhr.responseText);
-                // alert('Failed to resend OTP');
+             
             }
 });
 

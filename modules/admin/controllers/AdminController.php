@@ -9,11 +9,14 @@ class AdminController extends Controller{
 
      public function beforeAction($action)
     {
-        if (!Yii::$app->session->get('login')) {
-            return $this->redirect(['default/login']);
+        if (Yii::$app->user->isGuest) {
+             Yii::$app->session->setFlash('error', 'Login to Access.');
+            return $this->redirect(['default/login'])->send();
         }
         return parent::beforeAction($action);
     }
+    
+
 
     public function actionAdmin(){
 
@@ -23,36 +26,39 @@ class AdminController extends Controller{
                 'pageSize'=>10
             ]
        ]);
-        $this->layout='dashboard';
+        $this->layout='header';
        
         return $this->render('admin',[
             'dataProvider'=>$dataProvider,
             
         ]);
     }
-    public function actionCreate(){
-        $model=new User();
-        $this->layout='dashboard';
-        $model->scenario='createadmin';
 
-        if($model->load(Yii::$app->request->post()) && $model->validate()){
-                $model->usertype=2;
-                $model->is_verified=1;
-                if($model->save()){
-                    Yii::$app->session->setFlash('success', 'Account Creation Successfull');
+ 
+
+
+    public function actionCreate()
+        {
+            $model = new User();
+            $this->layout = 'header';
+            $model->scenario = 'createadmin';
+
+            if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+                if ($model->createAdmin()) {
+                    Yii::$app->session->setFlash('success', 'Account Creation Successful');
                     return $this->redirect(['admin/admin']);
+                } else {
+                    Yii::$app->session->setFlash('error', 'Account creation failed.');
                 }
+            }
+
+            return $this->render('create', ['model' => $model]);
         }
 
 
-        return $this->render('create',[
-            'model'=>$model
-        ]);
-    }
-
     public function actionUpdate($id){
 
-        $this->layout='dashboard';
+        $this->layout='header';
         $model=User::findOne($id);
         $model->scenario='createadmin';
         
@@ -76,6 +82,7 @@ class AdminController extends Controller{
 
         $admin->status=0;
         $admin->username = 'Account deleted @'.date('Y-m-d H:i:s').' - '.$admin->username;
+         Yii::$app->session->setFlash('success', 'Account Deletion Successfull');
         $admin->save(false);
         return $this->redirect(['admin']);
 
@@ -83,7 +90,7 @@ class AdminController extends Controller{
 
     public function actionView($id) //This is for the rbac controller
         {
-            $this->layout = 'dashboard';
+            $this->layout = 'header';
 
             $model = User::findOne($id); 
 

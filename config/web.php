@@ -37,6 +37,10 @@ $config = [
                     'sourcePath' => null,
                     'js' => [], 
                 ],
+                yii\web\JqueryAsset::class => [
+            'sourcePath' => null, // Prevent using Yii's default jQuery
+            'js' => ['js/jquery.min.js'], // Path to your local jQuery
+        ],
         ],
     ],
         'cache' => [

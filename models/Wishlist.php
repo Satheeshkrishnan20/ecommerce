@@ -57,4 +57,14 @@ class Wishlist extends \yii\db\ActiveRecord
         return $this->hasOne(Product::class, ['p_id' => 'product_id']);
     }
 
+    public static function getUserWishlist($userId)
+        {
+            return new \yii\data\ActiveDataProvider([
+                'query' => self::find()
+                    ->where(['user_id' => $userId, 'status' => 1])
+                    ->with(['product.category']),
+                'pagination' => ['pageSize' => 10],
+            ]);
+        }
+
 }

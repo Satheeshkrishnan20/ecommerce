@@ -13,39 +13,32 @@ use app\modules\admin\models\Category;
 
 class ProductController extends Controller
 {
-    public $layout = 'dashboard';
+    public $layout = 'header';
 
-    public function beforeAction($action)
+   public function beforeAction($action)
     {
-        if (!Yii::$app->session->get('login')) {
-            return $this->redirect(['default/login']);
+        if (Yii::$app->user->isGuest) {
+             Yii::$app->session->setFlash('error', 'Login to Access.');
+            return $this->redirect(['default/login'])->send();
         }
         return parent::beforeAction($action);
     }
 
-public function actionProduct()
-{
-    $categoryName = Yii::$app->request->post('category'); 
+            public function actionProduct()
+            {
+                $this->layout = 'header';
 
-    $query = Product::find()
-        ->joinWith('category') // assumes relation: getCategory()
-        ->where(['product.status' => 1]);
+                $categoryName = Yii::$app->request->post('category');
 
-    if (!empty($categoryName)) {
-        $query->andWhere(['like', 'category.c_name', $categoryName]);
-    }
+                $model = new Product();
+                $dataProvider = $model->searchByCategory($categoryName);
 
-    $dataProvider = new \yii\data\ActiveDataProvider([
-        'query' => $query,
-        'pagination' => ['pageSize' => 10],
-        'sort' => ['defaultOrder' => ['p_id' => SORT_DESC]],
-    ]);
+                return $this->render('product', [
+                    'dataProvider' => $dataProvider,
+                    'category' => $categoryName,
+                ]);
+            }
 
-    return $this->render('product', [
-        'dataProvider' => $dataProvider,
-        'category' => $categoryName,
-    ]);
-}
 
 
     public function actionCreate()

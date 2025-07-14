@@ -1,6 +1,9 @@
 <?php
 use yii\helpers\Html;
 use yii\bootstrap5\ActiveForm;
+use app\components\assets\AppAsset;
+
+AppAsset::register($this);
 
 $this->title = 'Admin Login';
 ?>

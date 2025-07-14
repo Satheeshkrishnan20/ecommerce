@@ -1,6 +1,7 @@
 <?php
 
 namespace app\modules\admin\models;
+use yii\data\ActiveDataProvider;
 
 use Yii;
 
@@ -40,7 +41,8 @@ public function rules()
         [['category_id', 'product_price', 'product_name', 'product_description', 'product_instock','min_quantity','max_quantity','product_image'], 'required', 'on' => ['create', 'update']],
 
         // Only required during create
-        [['product_image'], 'safe', 'on' => 'create'],
+        // [['product_image'], 'safe', 'on' => 'create'],
+        [['product_image'], 'file', 'extensions' => 'png, jpg, jpeg, gif', 'mimeTypes' => 'image/jpeg, image/png, image/gif', 'on' => 'create'],
 
         // Optional (but safe) on update
         [['product_image'], 'safe', 'on' => 'update'],
@@ -65,19 +67,51 @@ public function rules()
             return $scenarios;
     }
 
-    public function validateUniqueProductName($attribute, $params, $validator)
-        {
-            $query = self::find()->where([$attribute => $this->$attribute]);
 
-            // If it's update, exclude current ID
-            if (!$this->isNewRecord) {
-                $query->andWhere(['<>', 'p_id', $this->p_id]);
-            }
+             public function search($params)
+                {
+                    $query = Product::find()->alias('p')
+                        ->innerJoinWith(['category c'])
+                        ->where(['p.status' => 1]);
 
-            if ($query->exists()) {
-                $this->addError($attribute, 'Product name already exists.');
-            }
-        }
+                    if (!empty($params['seourl'])) {
+                        $selected = is_array($params['seourl']) ? $params['seourl'] : [$params['seourl']];
+                        $query->andWhere(['c.seourl' => $selected]);
+                    }
+
+                    return new ActiveDataProvider([
+                        'query' => $query,
+                        'pagination' => ['pageSize' => 10],
+                    ]);
+                }
+
+
+            public function searchByCategory($categoryName = null)
+                {
+                    $query = self::find()
+                        ->joinWith('category') // assumes getCategory() relation exists
+                        ->where(['product.status' => 1]);
+
+                    if (!empty($categoryName)) {
+                        $query->andWhere(['like', 'category.c_name', $categoryName]);
+                    }
+
+                    return new ActiveDataProvider([
+                        'query' => $query,
+                        'pagination' => ['pageSize' => 10],
+                        'sort' => ['defaultOrder' => ['p_id' => SORT_DESC]],
+                    ]);
+                }
+
+                public function getProductCount()
+                    {
+                        return self::find()->count();
+                    }
+
+
+
+
+ 
 
 
     /**

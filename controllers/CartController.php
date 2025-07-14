@@ -11,33 +11,23 @@ use Yii;
 class CartController extends Controller
 {
     public function actionCart()
-    {
-        $userId = Yii::$app->user->id;
-      
-                    if (Yii::$app->user->isGuest) {
-                        Yii::$app->session->setFlash('error', 'Login to access cart.');
-                        return $this->redirect(['home/login']);
-                    }
-
-        $dataProvider = new ActiveDataProvider([
-            'query' => Cart::find()
-                ->where(['user_id' => $userId,'status'=>1])
-                ->with(['product.category']),
-            'pagination' => ['pageSize' => 3],
-        ]);
-
-        $dataProvider1 = new ActiveDataProvider([
-            'query' => Cart::find()
-                ->where(['user_id' => $userId,'status'=>1])
-                ->with(['product.category']),
-            'pagination' => ['pageSize' => 7],
-        ]);
-
-        return $this->render('cart', [
-            'dataProvider' => $dataProvider,
-            'dataProvider1' => $dataProvider1
-        ]);
+{
+    if (Yii::$app->user->isGuest) {
+        Yii::$app->session->setFlash('error', 'Login to access cart.');
+        return $this->redirect(['home/login']);
     }
+
+    $userId = Yii::$app->user->id;
+
+    $dataProvider = Cart::getUserCart($userId, 3);   // smaller card view maybe
+    $dataProvider1 = Cart::getUserCart($userId, 7);  // maybe sidebar or listing
+
+    return $this->render('cart', [
+        'dataProvider' => $dataProvider,
+        'dataProvider1' => $dataProvider1,
+    ]);
+}
+
 
     public function actionRemove($id){
         $cart = Cart::findOne($id);

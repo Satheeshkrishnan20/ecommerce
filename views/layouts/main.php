@@ -1,6 +1,12 @@
 <?php
 use yii\helpers\Html;
 use yii\helpers\Url;
+use app\components\assets\AppAsset;
+
+AppAsset::register($this);
+// $this->registerJsFile('@web/js/site.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+
+
 
 $this->beginPage();
 ?>
@@ -12,7 +18,7 @@ $this->beginPage();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?= Html::csrfMetaTags() ?>
-    <title>Admin Panel</title>
+    <title>Home</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -22,55 +28,7 @@ $this->beginPage();
 
     <style>
     /* ... (existing flash message and error styles) ... */
-    .flash-messages-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1050;
-        max-width: 350px;
-        width: 100%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
-
-    @media (min-width: 576px) {
-        .flash-messages-container {
-            width: auto;
-            padding: 0;
-        }
-    }
-
-    .flash-messages-container .alert {
-        margin-bottom: 10px;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
-    }
-
-    .has-error .help-block,
-    .has-error .invalid-feedback {
-        color: red;
-        font-size: 0.9em;
-    }
-
-    /* --- IMPORTANT: Cart Badge Styling --- */
-    .nav-item .cart-link-with-badge {
-        position: relative; /* Make the link itself the positioning context */
-        display: inline-flex; /* Use flex to align text and potentially future icons */
-        align-items: center; /* Vertically center items if any */
-    }
-
-    .nav-item .cart-link-with-badge .badge {
-        position: absolute;
-        /* --- Fine-tune these values based on your font and desired look --- */
-        top: 1px; /* Adjust vertical position: negative moves up, positive moves down */
-        right: -7px; /* Adjust horizontal position: negative moves left, positive moves right */
-        /* --- End Fine-tuning --- */
-
-        padding: .3em .55em; /* Slightly smaller padding for a more compact badge */
-        font-size: .6em;     /* Keep font small */
-        line-height: 1;      /* Ensure text in badge aligns correctly */
-        border-radius: .375rem; /* Standard Bootstrap pill radius */
-        z-index: 1;          /* Ensure badge is on top of link */
-    }
+  
     </style>
 </head>
 <body>
@@ -78,7 +36,7 @@ $this->beginPage();
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid d-flex justify-content-between align-items-center">
-        <a class="navbar-brand" href="#">Logo</a>
+        <a class="navbar-brand" href="home">Logo</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

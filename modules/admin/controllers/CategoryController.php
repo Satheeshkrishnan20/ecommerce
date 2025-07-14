@@ -19,9 +19,9 @@ class CategoryController extends Controller
      * @return string
      */
 
-     public function beforeAction($action)
+   public function beforeAction($action)
     {
-        if (!Yii::$app->session->get('login')) {
+        if (Yii::$app->user->isGuest) {
              Yii::$app->session->setFlash('error', 'Login to Access.');
             return $this->redirect(['default/login'])->send();
         }
@@ -29,21 +29,29 @@ class CategoryController extends Controller
     }
  
 
-     public function actionCategory(){
-        $this->layout='dashboard';
-        $dataProvider=new ActiveDataProvider([
-            'query'=>Category::find()->where(['status'=>1])
-        ]);
-        return $this->render('category',[
-            'dataProvider'=>$dataProvider
-        ]);
-    }
+   
+
+   public function actionCategory()
+        {
+            $this->layout = 'header';
+
+            $model = new Category();
+            $categoryName = Yii::$app->request->post('category');
+            $dataProvider = $model->searchByName($categoryName);
+
+            return $this->render('category', [
+                'dataProvider' => $dataProvider,
+                'category' => $categoryName,
+            ]);
+        }
+
+
 
     
 
 
     public function actionCreatecategory(){
-         $this->layout = 'dashboard';
+         $this->layout = 'header';
 
          $model=new Category();
 
@@ -67,7 +75,7 @@ class CategoryController extends Controller
   
 
     public function actionUpdate($id){
-        $this->layout='dashboard';
+        $this->layout='header';
         $model = Category::findOne($id);
 
         if($model->load(yii::$app->request->post())){
@@ -101,11 +109,6 @@ class CategoryController extends Controller
         return ['success' => false, 'message' => 'Failed to delete category.'];
     }
 }
-
-
-
-
-
 
 
 }

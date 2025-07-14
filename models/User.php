@@ -100,7 +100,7 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
     }
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // Optional if you're not using token-based login (like in APIs)
+        
         return true;
     }
 
@@ -194,6 +194,74 @@ public function hasPermission(string $permission): bool
             return false;
 
         }
+
+        public function login()
+        {
+            if (!$this->validate()) {
+                return false;
+            }
+
+            $user = self::findOne([
+                'username' => $this->username,
+                'is_verified' => 1,
+                'status' => 1,
+                'usertype' => 1,
+            ]);
+
+            if (!$user || !Yii::$app->security->validatePassword($this->password, $user->password)) {
+                $this->addError('password', 'Invalid username or password.');
+                return false;
+            }
+
+            Yii::$app->user->login($user);
+
+            // Set cart count and session data using helper
+            $cartCount = Cart::find()->where(['user_id' => $user->id, 'status' => 1])->count();
+            Yii::$app->helper->set('cart_item_count', $cartCount);
+            Yii::$app->helper->set('username', $user->username);
+
+            return true;
+        }
+
+        public function AdminLogin()
+        {
+            $user = self::findOne(['username' => $this->username]);
+
+            if (!$user || !$user->validatePassword($this->password)) {
+                $this->addError('password', 'Invalid username or password.');
+                return false;
+            }
+
+            if ($user->usertype == 1) {
+                $this->addError('username', 'Access denied for this user type.');
+                return false;
+            }
+
+            if (Yii::$app->user->login($user)) {
+                // Set RBAC if usertype is 2
+                if ($user->usertype == 2) {
+                    $rbac = json_decode($user->rbac, true);
+                    Yii::$app->helper->set('rbac', is_array($rbac) ? $rbac : []);
+                }
+
+                return true;
+            }
+
+            $this->addError('username', 'Login failed: could not log in.');
+            return false;
+        }
+
+        public function createAdmin()
+            {
+                $this->usertype = 2;              // Admin user
+                $this->is_verified = 1;           // Already verified
+                $this->status = 1;                // Optional: Mark as active
+                $this->password = Yii::$app->security->generatePasswordHash($this->password);
+
+                return $this->save(false);        // You’ve already validated before calling this
+            }
+
+
 
 
 

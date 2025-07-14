@@ -45,40 +45,38 @@ class Category extends ActiveRecord
         ];
     }
 
+    public static function getActiveCategory(){
+        return Category::find()
+            ->innerJoinWith('products')
+            ->where(['category.status' => 1])
+            ->groupBy('category.c_id')
+            ->all();
+    }
+
    
     public function getProducts()
     {
         return $this->hasMany(Product::class, ['category_id' => 'c_id']);
     }
 
-    
-    // public function validateUniqueCName($attribute, $params)
-    // {
-    //     $query = self::find()->where([$attribute => $this->$attribute]);
+    public function getCategoryCount(){
+         return self::find()->count();
+    }
 
-    //     if (!$this->isNewRecord) {
-    //         $query->andWhere(['<>', 'c_id', $this->c_id]);
-    //     }
+    public function searchByName($categoryName = null)
+        {
+            $query = self::find()->where(['status' => 1]);
 
-    //     if ($query->exists()) {
-    //         $this->addError($attribute, 'This category name has already been taken.');
-    //     }
-    // }
+            if (!empty($categoryName)) {
+                $query->andWhere(['like', 'c_name', $categoryName]);
+            }
 
-    
-    // public function validateUniqueSeoUrl($attribute, $params)
-    // {
-    //     $query = self::find()->where([$attribute => $this->$attribute]);
-
-   
-    //     if (!$this->isNewRecord) {
-    //         $query->andWhere(['<>', 'c_id', $this->c_id]);
-    //     }
-
-    //     if ($query->exists()) {
-    //         $this->addError($attribute, 'This SEO URL has already been taken.');
-    //     }
-    // }
+            return new \yii\data\ActiveDataProvider([
+                'query' => $query,
+                'pagination' => ['pageSize' => 10],
+                'sort' => ['defaultOrder' => ['c_id' => SORT_DESC]],
+            ]);
+        }
 
   
 }

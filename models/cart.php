@@ -29,6 +29,24 @@ class Cart extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getUserCart($userId, $pageSize = 3)
+        {
+            return new \yii\data\ActiveDataProvider([
+                'query' => self::find()
+                    ->where(['user_id' => $userId, 'status' => 1])
+                    ->with(['product.category']),
+                'pagination' => ['pageSize' => $pageSize],
+            ]);
+        }
+
+        // app/models/Cart.php
+
+      
+
+       
+
+
+
     public function getProduct()
     {
         return $this->hasOne(Product::class, ['p_id' => 'product_id']);

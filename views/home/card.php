@@ -62,26 +62,27 @@ use yii\widgets\ActiveForm;
     </div>
 </div>
 
-<?php
-$this->registerJs(<<<JS
-$('.minus-btn').click(function() {
-    const input = $(this).siblings('.quantity-input');
-    let val = parseInt(input.val());
-    let min = parseInt(input.attr('min')) || 1;
+<script>
+$(document).ready(function () {
+    $(document).off('click', '.minus-btn').on('click', '.minus-btn', function () {
+        const input = $(this).siblings('.quantity-input');
+        let val = parseInt(input.val());
+        let min = parseInt(input.attr('min')) || 1;
 
-    if (val > min) {
-        input.val(val - 1);
-    }
+        if (val > min) {
+            input.val(val - 1);
+        }
+    });
+
+    $(document).off('click', '.plus-btn').on('click', '.plus-btn', function () {
+        const input = $(this).siblings('.quantity-input');
+        let val = parseInt(input.val());
+        let max = parseInt(input.attr('max')) || 999;
+
+        if (val < max) {
+            input.val(val + 1);
+        }
+    });
 });
 
-$('.plus-btn').click(function() {
-    const input = $(this).siblings('.quantity-input');
-    let val = parseInt(input.val());
-    let max = parseInt(input.attr('max')) || 999;
-
-    if (val < max) {
-        input.val(val + 1);
-    }
-});
-JS);
-?>
+</script>

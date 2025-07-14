@@ -22,7 +22,9 @@
         "kartik-v/yii2-widget-datepicker": "@dev",
         "kartik-v/yii2-widget-select2": "@dev",
         "phpmailer/phpmailer": "^6.10",
-        "2amigos/yii2-chartjs-widget": "^3.0"
+        "2amigos/yii2-chartjs-widget": "^3.0",
+        "twbs/bootstrap": "^5.3",
+        "bower-asset/jquery": "^3.7"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
@@ -74,5 +76,10 @@
             "type": "composer",
             "url": "https://asset-packagist.org"
         }
-    ]
+    ],
+    "asset-installer-paths": {
+    "bower-asset-library": "vendor/bower-asset",
+    "npm-asset-library": "vendor/npm-asset"
+}
+
 }

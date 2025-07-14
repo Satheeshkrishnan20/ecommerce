@@ -3,6 +3,7 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
 use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 
 $user = Yii::$app->user->identity;
 $usertype = $user?->usertype ?? null;
@@ -16,8 +17,7 @@ if ($usertype == 3 || $user?->hasPermission('delete_customer')) {
 }
 $template = trim($template);
 
-$showSearch = !empty($model->username);
-$searchInputId = Html::getInputId($model, 'username');
+
 ?>
 
 <!-- Header -->
@@ -51,6 +51,15 @@ $searchInputId = Html::getInputId($model, 'username');
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => $template,
+            'buttons'=>[
+                'delete'=>function($url,$model){
+                    return Html::a('<i class="bi bi-trash text-primary"></i>', 'javascript:void(0)',[
+                        'class'=>'btn-delete',
+                        'data-id'=>$model->id,
+                        'data-pjax'=>0
+                    ]);
+                }
+            ]
         ],
     ],
     'tableOptions' => ['class' => 'table table-bordered table-hover', 'style' => 'width: 100%'],
@@ -60,29 +69,32 @@ $searchInputId = Html::getInputId($model, 'username');
 
 <script>
 $(document).ready(function () {
-    $('#toggleBtn').click(function () {
-        $('#helloText').slideToggle();
-    });
-
     $(document).on('click', '.btn-delete', function (e) {
         e.preventDefault();
         var id = $(this).data('id');
-        var row = $(this).closest('tr');
+        var url = '<?= \yii\helpers\Url::to(['user/delete']) ?>?id=' + id;
 
         if (confirm('Are you sure you want to delete this user?')) {
             $.ajax({
-                url: '/user/delete?id=' + id,
+                url: url,
                 type: 'POST',
-                success: function () {
-                    row.remove();
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        alert(res.message);
+                        $.pjax.reload({ container: '#pjax-container', timeout: 10000 });
+                    } else {
+                        alert(res.message || 'Delete failed.');
+                    }
                 },
                 error: function () {
-                    alert('Error deleting user. Please try again.');
+                    alert('Server error. Please try again.');
                 }
             });
         }
     });
 });
+
 </script>
 
 

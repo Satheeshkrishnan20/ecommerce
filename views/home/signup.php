@@ -12,9 +12,13 @@ use yii\helpers\Html;
                 <h4 class="text-center mb-4"><?= $model->isNewRecord ? 'Create User' : 'Update User' ?></h4>
 
                 <?php $form = ActiveForm::begin([
+                    'id' => 'signup-form',
+                    'enableClientValidation' => true,
                     'options' => ['class' => 'needs-validation'],
                     'fieldConfig' => [
-                        'errorOptions' => ['class' => 'text-danger'],
+                        'template' => "{label}\n{input}\n{error}", // Clean error under input
+                        'labelOptions' => ['class' => 'form-label'],
+                        'errorOptions' => ['class' => 'text-danger mt-1'],
                     ],
                 ]); ?>
 
@@ -23,19 +27,19 @@ use yii\helpers\Html;
                     <div class="col-md-6">
                         <?= $form->field($model, 'username')
                             ->label('Username <span class="text-danger">*</span>', ['encode' => false])
-                            ->textInput(['class' => 'form-control', 'placeholder' => 'Enter Username']) ?>
+                            ->textInput(['placeholder' => 'Enter Username']) ?>
 
                         <?= $form->field($model, 'fullname')
                             ->label('Full Name <span class="text-danger">*</span>', ['encode' => false])
-                            ->textInput(['class' => 'form-control', 'placeholder' => 'Enter Full Name']) ?>
+                            ->textInput(['placeholder' => 'Enter Full Name']) ?>
 
                         <?= $form->field($model, 'email')
                             ->label('Email <span class="text-danger">*</span>', ['encode' => false])
-                            ->input('email', ['class' => 'form-control', 'placeholder' => 'Enter Email']) ?>
+                            ->input('email', ['placeholder' => 'Enter Email']) ?>
 
                         <?= $form->field($model, 'phone')
                             ->label('Phone Number <span class="text-danger">*</span>', ['encode' => false])
-                            ->input('number', ['class' => 'form-control', 'placeholder' => 'Enter Phone Number', 'id' => 'phone-input']) ?>
+                            ->input('number', ['placeholder' => 'Enter Phone Number', 'id' => 'phone-input']) ?>
 
                         <?= $form->field($model, 'gender')
                             ->label('Gender <span class="text-danger">*</span>', ['encode' => false])
@@ -43,13 +47,13 @@ use yii\helpers\Html;
                                 'male' => 'Male',
                                 'female' => 'Female',
                                 'other' => 'Other'
-                            ], ['class' => 'form-check form-check-inline']) ?>
+                            ], ['class' => 'form-check']) ?>
 
                         <?= $form->field($model, 'dob')
                             ->label('Date of Birth <span class="text-danger">*</span>', ['encode' => false])
                             ->widget(DatePicker::class, [
                                 'bsVersion' => '5',
-                                'options' => ['class' => 'form-control', 'placeholder' => 'Select Birth Date...'],
+                                'options' => ['placeholder' => 'Select Birth Date...'],
                                 'pluginOptions' => [
                                     'autoclose' => true,
                                     'format' => 'yyyy-mm-dd',
@@ -62,15 +66,15 @@ use yii\helpers\Html;
                     <div class="col-md-6">
                         <?= $form->field($model, 'address')
                             ->label('Address <span class="text-danger">*</span>', ['encode' => false])
-                            ->textarea(['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Enter Address']) ?>
+                            ->textarea(['rows' => 3, 'placeholder' => 'Enter Address']) ?>
 
                         <?= $form->field($model, 'pincode')
                             ->label('Pincode <span class="text-danger">*</span>', ['encode' => false])
-                            ->input('number', ['class' => 'form-control', 'placeholder' => 'Enter Pincode', 'id' => 'pincode-input']) ?>
+                            ->input('number', ['placeholder' => 'Enter Pincode', 'id' => 'pincode-input']) ?>
 
                         <?= $form->field($model, 'district')
                             ->label('District <span class="text-danger">*</span>', ['encode' => false])
-                            ->textInput(['class' => 'form-control', 'placeholder' => 'Enter District']) ?>
+                            ->textInput(['placeholder' => 'Enter District']) ?>
 
                         <?= $form->field($model, 'state')
                             ->label('State <span class="text-danger">*</span>', ['encode' => false])
@@ -83,23 +87,19 @@ use yii\helpers\Html;
                                 'language' => 'en',
                                 'options' => ['placeholder' => 'Select State...'],
                                 'pluginOptions' => ['allowClear' => true],
-                                'class' => 'form-control'
                             ]) ?>
 
                         <?= $form->field($model, 'password')
                             ->label('Password <span class="text-danger">*</span>', ['encode' => false])
-                            ->passwordInput(['class' => 'form-control', 'placeholder' => 'Enter Password']) ?>
+                            ->passwordInput(['placeholder' => 'Enter Password']) ?>
 
                         <?= $form->field($model, 'confirm_password')
                             ->label('Confirm Password <span class="text-danger">*</span>', ['encode' => false])
-                            ->passwordInput(['class' => 'form-control', 'placeholder' => 'Confirm Password']) ?>
+                            ->passwordInput(['placeholder' => 'Confirm Password']) ?>
 
                         <div class="mt-4 d-flex justify-content-between">
-                            <?= Html::submitButton('Submit', ['class' => 'btn btn-primary w-auto me-3']) ?>
-
-                            <div class="d-flex">
-                                <?= Html::a('← Back', ['user'], ['class' => 'btn btn-outline-secondary w-auto']) ?>
-                            </div>
+                            <?= Html::submitButton('Submit', ['class' => 'btn btn-primary']) ?>
+                            <?= Html::a('← Back', ['home'], ['class' => 'btn btn-outline-secondary']) ?>
                         </div>
                     </div>
                 </div>
@@ -110,20 +110,39 @@ use yii\helpers\Html;
     </div>
 </div>
 
+<!-- Loader -->
+<div id="loader" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.7); z-index:9999; text-align:center;">
+    <div style="position: absolute; top:50%; left:50%; transform:translate(-50%, -50%)">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Sending...</span>
+        </div>
+        <p>Sending Email, please wait...</p>
+    </div>
+</div>
+
+<!-- JavaScript -->
 <script>
 $(document).ready(function () {
     $('#phone-input').on('input', function () {
-        let value = $(this).val();
-        if (value.length > 10) {
-            $(this).val(value.slice(0, 10));
-        }
+        let val = $(this).val();
+        if (val.length > 10) $(this).val(val.slice(0, 10));
     });
 
     $('#pincode-input').on('input', function () {
-        let value = $(this).val();
-        if (value.length > 6) {
-            $(this).val(value.slice(0, 6));
-        }
+        let val = $(this).val();
+        if (val.length > 6) $(this).val(val.slice(0, 6));
+    });
+
+   
+    $('#signup-form').on('beforeSubmit', function () {
+        $('#loader').fadeIn();
+        return true;
+    });
+
+  
+    $(document).ajaxError(function () {
+        $('#loader').fadeOut();
     });
 });
 </script>
+

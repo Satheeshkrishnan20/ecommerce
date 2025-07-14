@@ -16,7 +16,7 @@ class WishlistController extends Controller
                     //  $userId = Yii::$app->session->get('user_id');
                     $userId=Yii::$app->user->id;
                      if (Yii::$app->user->isGuest) {
-                        Yii::$app->session->setFlash('error', 'Login to  Wishlist.');
+                        Yii::$app->session->setFlash('error', 'Login to access Wishlist.');
                         return $this->redirect(['home/login']);
                     }
 
@@ -44,29 +44,25 @@ class WishlistController extends Controller
                     return $this->redirect(['home/home']);
                 }
 
+        public function actionWishlist()
+        {
+            if (Yii::$app->user->isGuest) {
+                Yii::$app->session->setFlash('error', 'Login to view wishlist.');
+                return $this->redirect(['home/login']);
+            }
 
-    public function actionWishlist(){
-        $userId = Yii::$app->session->get('user_id');
-        // $userId = Yii::$app->session->get('user_id');
-                    if (!$userId) {
-                        Yii::$app->session->setFlash('error', 'Login to add items to Wishlist.');
-                        return $this->redirect(['home/login']);
-                    }
-        $dataProvider=new ActiveDataProvider([
-            'query' => Wishlist::find()
-            ->where(['user_id' => $userId,'status'=>1])
-            ->with(['product.category']),
-        'pagination' => ['pageSize' => 10],
-        ]);
-        return $this->render('wishlist',[
-            'dataProvider'=>$dataProvider
-        ]);
-    }
+            $dataProvider = Wishlist::getUserWishlist(Yii::$app->user->id);
+
+            return $this->render('wishlist', [
+                'dataProvider' => $dataProvider
+            ]);
+        }
+
 
     public function actionDelete($id){
          $wishlist = Wishlist::findOne($id);
          $wishlist->status=0;
-         $wishlist->save();
+         $wishlist->delete();
          return $this->redirect(['wishlist']);
     }
 
