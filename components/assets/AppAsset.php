@@ -1,38 +1,29 @@
 <?php
-/**
- * @link https://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license https://www.yiiframework.com/license/
- */
 
 namespace app\components\assets;
 
 use yii\web\AssetBundle;
+use yii\web\View;
 
-/**
- * Main application asset bundle.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
- */
 class AppAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web/web/';
-    public $css = [
-        // 'css/site.css',
-        'css/admin.css',
-        'css/site.css',
-        '@bower/bootstrap/dist/css/bootstrap.min.css',
 
+    public $css = [
+        // Add your CSS files if needed
+        'css/site.css',
+        'css/admin.css',
+         'css/bootstrap.min.css',
     ];
+
     public $js = [
-    // 'js/site.js',
-     '@bower/bootstrap/dist/js/bootstrap.bundle.min.js',
-        '@bower/jquery/dist/jquery.min.js',
+        'js/jquery.js', // Local jQuery file
+        'js/site.js',
+        'js/bootstrap.bundle.min.js',
     ];
-    public $depends = [
-        'yii\web\YiiAsset',
-        'yii\bootstrap5\BootstrapAsset'
+
+    public $jsOptions = [
+        'position' => View::POS_HEAD, // Load JS in <head>
     ];
 }

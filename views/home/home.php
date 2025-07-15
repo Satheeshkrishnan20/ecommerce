@@ -53,18 +53,3 @@ $this->title = 'Shop';
     </div>
 </div>
 
-<!-- ✅ JavaScript -->
-<script>
-$(document).on('change', '.category-checkbox', function () {
-    const form = $('#category-filter-form');
-    const data = form.serialize();
-
-    $.pjax.reload({
-        container: '#product-pjax',
-        url: window.location.pathname + '?' + data,
-        push: false,
-        replace: false,
-        timeout: 10000
-    });
-});
-</script>

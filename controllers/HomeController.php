@@ -12,9 +12,19 @@ use yii\data\ActiveDataProvider;
 
 class HomeController extends Controller
 {
+
+    public function actionError()
+        {
+            $exception = Yii::$app->errorHandler->exception;
+
+            if ($exception !== null) {
+                return $this->render('error', ['exception' => $exception]);
+            }
+        }
     
     public function actionHome()
     {
+        // throw new \yii\web\NotFoundHttpException('This page does not exist.');
         $searchModel = new Product();
         $dataProvider = $searchModel->search(Yii::$app->request->get());
         $category = Category::getActiveCategory();

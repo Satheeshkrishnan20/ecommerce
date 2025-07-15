@@ -121,7 +121,7 @@ use yii\helpers\Html;
 </div>
 
 <!-- JavaScript -->
-<script>
+<!-- <script>
 $(document).ready(function () {
     $('#phone-input').on('input', function () {
         let val = $(this).val();
@@ -144,5 +144,5 @@ $(document).ready(function () {
         $('#loader').fadeOut();
     });
 });
-</script>
+</script> -->
 
