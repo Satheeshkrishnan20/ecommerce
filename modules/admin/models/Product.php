@@ -89,7 +89,7 @@ public function rules()
             public function searchByCategory($categoryName = null)
                 {
                     $query = self::find()
-                        ->joinWith('category') // assumes getCategory() relation exists
+                        ->joinWith('category') 
                         ->where(['product.status' => 1]);
 
                     if (!empty($categoryName)) {

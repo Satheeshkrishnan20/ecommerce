@@ -8,6 +8,7 @@ use app\modules\admin\models\Product;
 use app\modules\admin\models\Category;
 use yii\web\Controller;
 use Yii;
+use yii\helpers\Html;
 
 class DefaultController extends Controller
 {
@@ -27,7 +28,7 @@ class DefaultController extends Controller
             Yii::$app->helper->setFlash('success', 'Welcome back, ' . Yii::$app->user->identity->username . '!');
             return $this->redirect(['dashboard']);
         } else {
-            Yii::$app->helper->setFlash('error', Html::errorSummary($model));
+            Yii::$app->helper->setFlash('error', 'invalid username or password');
         }
     }
 

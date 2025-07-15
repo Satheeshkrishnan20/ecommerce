@@ -99,6 +99,9 @@ $template = trim($template);
         ],
         [
             'class' => 'yii\grid\ActionColumn',
+             'header' => 'Actions',
+              'headerOptions' => ['class' => 'text-primary'],       // Bootstrap class to center header text
+               
             'template' => $template,
             'buttons' => [
                 'delete' => function ($url, $model) {

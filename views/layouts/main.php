@@ -4,7 +4,7 @@ use yii\helpers\Url;
 use app\components\assets\AppAsset;
 
 AppAsset::register($this);
-// $this->registerJsFile('@web/js/site.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+
 
 
 
@@ -21,10 +21,7 @@ $this->beginPage();
     <title>Home</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
-
-    <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
+   
 
     <style>
     /* ... (existing flash message and error styles) ... */
@@ -64,12 +61,8 @@ $this->beginPage();
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white d-flex align-items-center" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <?php
-                        // $username=false;
-                     
-
-                            $username = $session->get('username');
-                       
+                        <?php        
+                            $username = $session->get('username');                      
                         ?>
                         <span class="navbar-text me-2">
                             <?= $username ? "Hello, " . Html::encode($username) : "Hi user" ?>

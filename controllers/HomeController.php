@@ -204,7 +204,7 @@ public function actionAdd()
     if ($cartItem) {
         $newQuantity = $cartItem->quantity + $quantity;
         if ($newQuantity > $maxQuantity) {
-            Yii::$app->helper->setFlash('error', "Only $maxQuantity units allowed per user for this product.");
+            Yii::$app->helper->setFlash('error', "Maximum quanitity already reached on the cart");
             return $this->goBack();
         }
         $cartItem->quantity = $newQuantity;
