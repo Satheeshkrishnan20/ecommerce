@@ -62,6 +62,7 @@ class WishlistController extends Controller
     public function actionDelete($id){
          $wishlist = Wishlist::findOne($id);
          $wishlist->status=0;
+           Yii::$app->session->setFlash('success', 'Product Removed from wishlist.');
          $wishlist->delete();
          return $this->redirect(['wishlist']);
     }

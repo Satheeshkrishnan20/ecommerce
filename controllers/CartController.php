@@ -33,6 +33,7 @@ class CartController extends Controller
         $cart = Cart::findOne($id);
          $cart->status=0;
          $cart->save();
+         Yii::$app->session->setFlash('success', 'Product Removed from Cart.');
          $userId=Yii::$app->user->id;
          $cartCount = Cart::find()->where(['user_id' => $userId,'status'=>1])->count();
         Yii::$app->helper->set('cart_item_count', $cartCount);

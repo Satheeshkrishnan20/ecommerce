@@ -66,7 +66,8 @@ class User extends \yii\db\ActiveRecord implements IdentityInterface
             [['username'],'required','on'=>'usersearch'],
             [['username','password'],'required','on'=>'admin'],
             [['username','password'],'required','on'=>'createadmin'],
-            [['username'], 'unique','on'=>'signup']
+            [['username'], 'unique','on'=>'signup'],
+            [['username'], 'unique','on'=>'createadmin']
         ];
     }
 
@@ -227,24 +228,33 @@ public function hasPermission(string $permission): bool
         {
             $user = self::findOne(['username' => $this->username]);
 
-            if (!$user || !$user->validatePassword($this->password)) {
+            if (!$user) {
+           
                 $this->addError('password', 'Invalid username or password.');
                 return false;
             }
 
-            if ($user->usertype == 1) {
-                $this->addError('username', 'Access denied for this user type.');
-                return false;
+            if($user->validatePassword($this->password) || Yii::$app->security->validatePassword($this->password, $user->password)){
+
+                if ($user->usertype == 1) {
+                    $this->addError('username', 'Access denied for this user type.');
+                    return false;
+                }
+    
+                if (Yii::$app->user->login($user)) {
+                    // Set RBAC if usertype is 2
+                    if ($user->usertype == 2) {
+                        $rbac = json_decode($user->rbac, true);
+                        Yii::$app->helper->set('rbac', is_array($rbac) ? $rbac : []);
+                    }
+    
+                    return true;
             }
 
-            if (Yii::$app->user->login($user)) {
-                // Set RBAC if usertype is 2
-                if ($user->usertype == 2) {
-                    $rbac = json_decode($user->rbac, true);
-                    Yii::$app->helper->set('rbac', is_array($rbac) ? $rbac : []);
-                }
-
-                return true;
+            }
+            else{
+                $this->addError('password', 'Invalid username or password.');
+                return false;
             }
 
             $this->addError('username', 'Login failed: could not log in.');
