@@ -5,7 +5,7 @@ use yii\widgets\Pjax;
 use yii\helpers\Url;
 
 
-$this->registerJsFile(Yii::getAlias('@web') . '/js/product.js', ['depends' => [\yii\web\JqueryAsset::class]]);
+// $this->registerJsFile(Yii::getAlias('@web') . '/js/product.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 
 
 
@@ -165,6 +165,8 @@ $(document).ready(function () {
             url: url,
             type: 'POST',
             dataType: 'json',
+            
+
             success: function (res) {
                 if (res.success) {
                     $.pjax.reload({ container: '#pjax-container', timeout: 10000 });

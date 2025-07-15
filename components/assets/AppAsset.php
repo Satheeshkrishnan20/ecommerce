@@ -15,7 +15,7 @@ class AppAsset extends AssetBundle
         'css/site.css',
         'css/admin.css',
          'css/bootstrap.min.css',
-         'css/bootstrap-icons.css',
+         
     ];
 
     public $js = [
@@ -23,10 +23,7 @@ class AppAsset extends AssetBundle
         'js/site.js',
         'js/bootstrap.bundle.min.js',
     ];
-    public $depends = [
-    'yii\web\YiiAsset',
-    'yii\bootstrap5\BootstrapAsset',
-];
+  
 
     public $jsOptions = [
         'position' => View::POS_HEAD, // Load JS in <head>

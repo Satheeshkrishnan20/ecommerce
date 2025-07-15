@@ -34,6 +34,8 @@ $template = trim($template);
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => $template,
+            'header' => 'Actions',
+              'headerOptions' => ['class' => 'text-primary'], 
             'buttons' => [
                 'view' => function ($url, $model, $key) {
                     return Html::a('<i class="bi bi-bag-plus text-primary"></i>', $url, [

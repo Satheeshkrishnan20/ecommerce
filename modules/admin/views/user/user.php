@@ -51,6 +51,8 @@ $template = trim($template);
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => $template,
+            'header' => 'Actions',
+              'headerOptions' => ['class' => 'text-primary'], 
             'buttons'=>[
                 'delete'=>function($url,$model){
                     return Html::a('<i class="bi bi-trash text-primary"></i>', 'javascript:void(0)',[
